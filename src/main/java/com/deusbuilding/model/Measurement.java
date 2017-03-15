@@ -13,16 +13,16 @@ import javafx.scene.transform.Rotate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class WallMeasurement {
+public class Measurement {
 
     private Scene scene;
     private Pane root;
-    private Line wall;
+    private Line line;
     private Text unit;
 
-    public WallMeasurement(Scene scene, Line wall, Pane root) {
+    public Measurement(Scene scene, Line line, Pane root) {
         this.scene = scene;
-        this.wall = wall;
+        this.line = line;
         this.root = root;
         this.unit = new Text();
         unit.setFill(Color.RED);
@@ -33,22 +33,22 @@ public class WallMeasurement {
 
     public void updateMeasurement() {
 
-        Double x1 = wall.getStartX();
-        Double x2 = wall.getEndX();
-        Double y1 = wall.getStartY();
-        Double y2 = wall.getEndY();
+        Double x1 = line.getStartX();
+        Double x2 = line.getEndX();
+        Double y1 = line.getStartY();
+        Double y2 = line.getEndY();
 
         //line length
-        Double wallLength = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
-        Double wallLengthMeters = wallLength/50; // transform to meters
-        wallLengthMeters = BigDecimal.valueOf(wallLengthMeters)
+        Double lineLength = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
+        Double lineLengthMeters = lineLength/50; // transform to meters
+        lineLengthMeters = BigDecimal.valueOf(lineLengthMeters)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
 
 
         unit.setX((x1+x2)/2+25);
         unit.setY((y1+y2)/2+25);
-        unit.setText(wallLengthMeters.toString() + " meters");
+        unit.setText(lineLengthMeters.toString() + " meters");
         unit.toFront();
     }
 }

@@ -1,7 +1,6 @@
 package com.deusbuilding;
 
 import com.deusbuilding.model.Wall;
-import com.deusbuilding.model.WallMeasurement;
 import com.deusbuilding.view.GenericView;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -33,12 +32,10 @@ public class App extends Application
     }
 
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("DeusBuilding");
+        primaryStage.setTitle("Deus Aedificium (Alpha)");
         GenericView genericView = GenericView.getInstance();
         genericView.setup();
         primaryStage.setScene(genericView.getTheScene());
         primaryStage.show();
     }
-
-
 }

@@ -8,7 +8,7 @@ import javafx.scene.layout.Pane;
 
 public class ElementNavigatorView {
 
-    private Pane navPane;
+    public static Pane navPane;
     private Scene scene;
 
     public ElementNavigatorView(Scene scene) {

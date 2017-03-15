@@ -7,12 +7,10 @@ import javafx.scene.layout.Pane;
 public class ElementNavigatorController {
 
     private Scene scene;
-    private Pane navPane;
     public static TreeItem<String> wallRoot = new TreeItem<> ("Walls");
 
-    public ElementNavigatorController(Scene scene, Pane navPane) {
+    public ElementNavigatorController(Scene scene) {
         this.scene = scene;
-        this.navPane = navPane;
     }
 
     public static void updateWalls() {

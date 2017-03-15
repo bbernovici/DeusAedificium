@@ -1,13 +1,14 @@
 package com.deusbuilding.controller;
 
-import com.deusbuilding.App;
+import com.deusbuilding.model.Measurement;
 import com.deusbuilding.model.Wall;
-import com.deusbuilding.model.WallMeasurement;
+import com.deusbuilding.view.DrawingView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -20,37 +21,34 @@ import java.util.ArrayList;
 
 public class WallController {
 
-    private Scene scene;
-    private Pane drawingPane;
     public static ArrayList<Wall> walls = new ArrayList<Wall>();
-    private ArrayList<WallMeasurement> wallMeasurements = new ArrayList<WallMeasurement>();
+    public static ArrayList<Measurement> wallMeasurements = new ArrayList<Measurement>();
 
-    public WallController(Scene scene, Pane drawingPane) {
-        this.scene = scene;
-        this.drawingPane = drawingPane;
-    }
-
-    public void createWallDrawingEvent() {
-        drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+    public static void createWallDrawingEvent(final Scene scene) {
+        final Pane drawingPane = DrawingView.drawingPane;
+        DrawingView.drawingScrollPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                ScrollPane sp = (ScrollPane) mouseEvent.getSource();
                 if(mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY){
-                    Line wallLine = new Line(mouseEvent.getSceneX(), mouseEvent.getSceneY(), mouseEvent.getSceneX(), mouseEvent.getSceneY());
-                    WallMeasurement wallMeasurement = new WallMeasurement(scene, wallLine, drawingPane);
+                    System.out.println(mouseEvent.getX() + " " + mouseEvent.getY());
+                    System.out.println(sp.getHvalue() + " " + mouseEvent.getY());
+
+                    Line wallLine = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
+                    Measurement wallMeasurement = new Measurement(scene, wallLine, drawingPane);
                     Wall wall = new Wall(wallLine, wallMeasurement);
                     walls.add(wall);
                     drawingPane.getChildren().add(wall.getLine());
                     wallMeasurements.add(wallMeasurement);
                     wall.getLine().setStrokeWidth(10);
-                    wall.getLine().setStartX(mouseEvent.getSceneX());
-                    wall.getLine().setStartY(mouseEvent.getSceneY());
+                    wall.getLine().setStartX(mouseEvent.getX());
+                    wall.getLine().setStartY(mouseEvent.getY());
                     wall.getLine().setVisible(true);
                     wall.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new WallModifyEventHandler());
                 }
                 if(mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED &&  walls.get(walls.size()-1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY){
-                    walls.get(walls.size()-1).getLine().setEndX(mouseEvent.getSceneX());
-                    walls.get(walls.size()-1).getLine().setEndY(mouseEvent.getSceneY());
+                    walls.get(walls.size()-1).getLine().setEndX(mouseEvent.getX());
+                    walls.get(walls.size()-1).getLine().setEndY(mouseEvent.getY());
                     walls.get(walls.size()-1).getWallMeasurement().updateMeasurement();
                 }
                 if(mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -60,7 +58,7 @@ public class WallController {
         });
     }
 
-    private class WallModifyEventHandler implements EventHandler<MouseEvent> {
+    private static class WallModifyEventHandler implements EventHandler<MouseEvent> {
 
         @Override
         public void handle(MouseEvent event) {

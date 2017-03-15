@@ -6,9 +6,9 @@ import javafx.scene.shape.Line;
 public class Wall {
 
     private Line line;
-    private WallMeasurement wallMeasurement;
+    private Measurement wallMeasurement;
 
-    public Wall(Line line, WallMeasurement wallMeasurement) {
+    public Wall(Line line, Measurement wallMeasurement) {
         this.line = line;
         this.wallMeasurement = wallMeasurement;
     }
@@ -17,7 +17,7 @@ public class Wall {
         return line;
     }
 
-    public WallMeasurement getWallMeasurement() {
+    public Measurement getWallMeasurement() {
         return wallMeasurement;
     }
 }
