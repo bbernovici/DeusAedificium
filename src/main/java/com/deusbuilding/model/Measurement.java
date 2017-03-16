@@ -20,12 +20,12 @@ public class Measurement {
     private Line line;
     private Text unit;
 
-    public Measurement(Scene scene, Line line, Pane root) {
+    public Measurement(Scene scene, Line line, Pane root, Color color) {
         this.scene = scene;
         this.line = line;
         this.root = root;
         this.unit = new Text();
-        unit.setFill(Color.RED);
+        unit.setFill(color);
         unit.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
         updateMeasurement();
         root.getChildren().add(unit);

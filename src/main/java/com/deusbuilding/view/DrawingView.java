@@ -1,6 +1,6 @@
 package com.deusbuilding.view;
 
-import com.deusbuilding.controller.WallController;
+import com.deusbuilding.controller.DrawingController;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -13,7 +13,7 @@ public class DrawingView {
 
     public static ScrollPane drawingScrollPane;
     public static Pane drawingPane;
-    public static WallController wallController;
+    public static DrawingController drawingController;
     public static Scene scene;
 
     public static void setup(Scene theScene) {
@@ -35,10 +35,10 @@ public class DrawingView {
         drawingScrollPane.setFitToWidth(true);
         drawingScrollPane.setFitToHeight(true);
         drawingScrollPane.setStyle("-fx-focus-color: transparent;");
-        wallController = new WallController();
+        drawingController = new DrawingController();
         drawingScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         drawingScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        wallController.createWallDrawingEvent(GenericView.theScene);
+        drawingController.createDrawingEvents(GenericView.theScene);
         //drawingPane.toFront();
     }
 

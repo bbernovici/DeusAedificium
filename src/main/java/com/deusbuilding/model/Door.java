@@ -2,7 +2,7 @@ package com.deusbuilding.model;
 
 import javafx.scene.shape.Line;
 
-public class Door {
+public class Door extends DrawingElement {
 
     private Line line;
     private Measurement doorMeasurement;

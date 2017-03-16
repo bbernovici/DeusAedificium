@@ -1,5 +1,7 @@
 package com.deusbuilding.view;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -8,6 +10,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import javax.tools.Tool;
 
 public class ToolboxView {
 
@@ -20,11 +24,13 @@ public class ToolboxView {
     public static Button nonSmartButton;
     public static Button smartButton;
     public static Button sensorButton;
+    public static String selectedTool;
 
     private Scene scene;
 
     public ToolboxView(Scene scene) {
         this.scene = scene;
+        this.selectedTool = "select";
     }
 
     public void setup() {
@@ -38,6 +44,13 @@ public class ToolboxView {
         selectButton.setTooltip(selectTooltip);
         toolBoxPane.setConstraints(selectButton, 1, 1);
         toolBoxPane.getChildren().addAll(selectButton);
+        selectButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "select";
+                selectButton.setStyle("-fx-background-color: lightcoral");
+            }
+        });
 
         //move button
         Image moveIcon = new Image(getClass().getResourceAsStream("/icons/move.png"), 25d, 25d, false, false);
@@ -47,7 +60,14 @@ public class ToolboxView {
         moveButton.setTooltip(moveTooltip);
         toolBoxPane.setConstraints(moveButton, 2, 1);
         toolBoxPane.getChildren().addAll(moveButton);
+        moveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "move";
+                moveButton.setStyle("-fx-background-color: lightcoral");
 
+            }
+        });
 
         //wall button
         Image wallIcon = new Image(getClass().getResourceAsStream("/icons/wall.png"), 25d, 25d, false, false);
@@ -57,6 +77,13 @@ public class ToolboxView {
         wallButton.setTooltip(wallTooltip);
         toolBoxPane.setConstraints(wallButton, 1, 2);
         toolBoxPane.getChildren().addAll(wallButton);
+        wallButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "wall";
+                wallButton.setStyle("-fx-background-color: lightcoral");
+            }
+        });
 
         //door button
         Image doorIcon = new Image(getClass().getResourceAsStream("/icons/door.png"), 25d, 25d, false, false);
@@ -66,6 +93,13 @@ public class ToolboxView {
         doorButton.setTooltip(doorTooltip);
         toolBoxPane.setConstraints(doorButton, 2, 2);
         toolBoxPane.getChildren().addAll(doorButton);
+        doorButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "door";
+                doorButton.setStyle("-fx-background-color: lightcoral");
+            }
+        });
 
         //window button
         Image windowIcon = new Image(getClass().getResourceAsStream("/icons/window.png"), 25d, 25d, false, false);
@@ -103,6 +137,18 @@ public class ToolboxView {
         toolBoxPane.setConstraints(sensorButton, 2, 4 );
         toolBoxPane.getChildren().addAll(sensorButton);
 
+    }
+
+    public void resetOtherButtons() {
+        toolBoxPane.setStyle(null);
+        selectButton.setStyle(null);
+        moveButton.setStyle(null);
+        wallButton.setStyle(null);
+        doorButton.setStyle(null);
+        windowButton.setStyle(null);
+        nonSmartButton.setStyle(null);
+        smartButton.setStyle(null);
+        sensorButton.setStyle(null);
     }
 
     public Scene getScene() {

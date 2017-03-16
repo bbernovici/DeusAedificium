@@ -1,9 +1,8 @@
 package com.deusbuilding.model;
 
-import javafx.scene.Node;
 import javafx.scene.shape.Line;
 
-public class Wall {
+public class Wall extends DrawingElement {
 
     private Line line;
     private Measurement wallMeasurement;

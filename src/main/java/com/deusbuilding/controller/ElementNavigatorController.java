@@ -1,5 +1,6 @@
 package com.deusbuilding.controller;
 
+import com.deusbuilding.view.ElementNavigatorView;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.Pane;
@@ -7,18 +8,29 @@ import javafx.scene.layout.Pane;
 public class ElementNavigatorController {
 
     private Scene scene;
-    public static TreeItem<String> wallRoot = new TreeItem<> ("Walls");
+
 
     public ElementNavigatorController(Scene scene) {
         this.scene = scene;
     }
 
     public static void updateWalls() {
-        wallRoot.getChildren().remove(0, wallRoot.getChildren().size());
-        wallRoot.setExpanded(true);
-        for (int i = 0; i < WallController.walls.size(); i++) {
+        ElementNavigatorView.wallRoot.getChildren().remove(0, ElementNavigatorView.wallRoot.getChildren().size());
+        ElementNavigatorView.wallRoot.setExpanded(true);
+        for (int i = 0; i < DrawingController.walls.size(); i++) {
             TreeItem<String> item = new TreeItem<> ("Wall " + i);
-            wallRoot.getChildren().add(item);
+            ElementNavigatorView.wallRoot.getChildren().add(item);
         }
     }
+
+    public static void updateDoors() {
+        ElementNavigatorView.doorRoot.getChildren().remove(0, ElementNavigatorView.doorRoot.getChildren().size());
+        ElementNavigatorView.doorRoot.setExpanded(true);
+        for (int i = 0; i < DrawingController.doors.size(); i++) {
+            TreeItem<String> item = new TreeItem<> ("Wall " + i);
+            ElementNavigatorView.doorRoot.getChildren().add(item);
+        }
+    }
+
+
 }

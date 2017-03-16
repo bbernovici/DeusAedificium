@@ -1,6 +1,5 @@
 package com.deusbuilding.view;
 
-import com.deusbuilding.controller.WallController;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -8,7 +7,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import static com.deusbuilding.view.DrawingView.drawingPane;
 
 public class MenuView {
 
