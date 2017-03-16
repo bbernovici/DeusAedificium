@@ -2,6 +2,7 @@ package com.deusbuilding.view;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -30,7 +31,7 @@ public class ToolboxView {
 
     public ToolboxView(Scene scene) {
         this.scene = scene;
-        this.selectedTool = "select";
+        this.selectedTool = "none";
     }
 
     public void setup() {
@@ -48,6 +49,7 @@ public class ToolboxView {
             @Override public void handle(ActionEvent e) {
                 resetOtherButtons();
                 ToolboxView.selectedTool = "select";
+                DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
                 selectButton.setStyle("-fx-background-color: lightcoral");
             }
         });
@@ -64,6 +66,7 @@ public class ToolboxView {
             @Override public void handle(ActionEvent e) {
                 resetOtherButtons();
                 ToolboxView.selectedTool = "move";
+                DrawingView.drawingPane.setCursor(Cursor.MOVE);
                 moveButton.setStyle("-fx-background-color: lightcoral");
 
             }
@@ -81,6 +84,7 @@ public class ToolboxView {
             @Override public void handle(ActionEvent e) {
                 resetOtherButtons();
                 ToolboxView.selectedTool = "wall";
+                DrawingView.drawingPane.setCursor(Cursor.CROSSHAIR);
                 wallButton.setStyle("-fx-background-color: lightcoral");
             }
         });
@@ -97,6 +101,7 @@ public class ToolboxView {
             @Override public void handle(ActionEvent e) {
                 resetOtherButtons();
                 ToolboxView.selectedTool = "door";
+                DrawingView.drawingPane.setCursor(Cursor.CROSSHAIR);
                 doorButton.setStyle("-fx-background-color: lightcoral");
             }
         });

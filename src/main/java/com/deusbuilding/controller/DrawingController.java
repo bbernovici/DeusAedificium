@@ -7,10 +7,10 @@ import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -21,7 +21,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,16 +39,19 @@ public class DrawingController {
 
 
     public static Line drawLine(MouseEvent mouseEvent) {
-        Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
+        final Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
+
+        // select tool behavior
         line.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (ToolboxView.selectedTool.equals("select")) {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         if (mouseEvent.getSource().getClass() == Line.class) {
+                            System.out.println("A INTRAT!");
                             Line currentSelected = (Line) mouseEvent.getSource();
                             if (mouseEvent.isControlDown()) {
-                                if(currentSelected.getStroke() == Color.RED) {
+                                if (currentSelected.getStroke() == Color.RED) {
                                     currentSelected.setStroke(selectedElements.get(currentSelected));
                                     selectedElements.remove(currentSelected);
                                 } else {
@@ -57,7 +59,7 @@ public class DrawingController {
                                     currentSelected.setStroke(Color.RED);
                                 }
                             } else {
-                                if(currentSelected.getStroke() == Color.RED) {
+                                if (currentSelected.getStroke() == Color.RED) {
                                     for (Shape s : selectedElements.keySet()) {
                                         s.setStroke(selectedElements.get(s));
                                     }
@@ -76,6 +78,47 @@ public class DrawingController {
                 }
             }
         });
+
+        //move tool behavior
+        DrawingView.drawingScrollPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (ToolboxView.selectedTool.equals("move")) {
+                    double previousX = 0, previousY = 0;
+                    HashMap hm = new HashMap();
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        previousX = mouseEvent.getX();
+                        previousY = mouseEvent.getY();
+                        hm = (HashMap) selectedElements.clone();
+                        System.out.println(hm.size());
+                    }
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        for (Shape s : selectedElements.keySet()) {
+                            if (s.getClass() == Line.class) {
+                                Line l = (Line) s;
+                                l.setStartX(((Line) hm.get(s)).getStartX() + mouseEvent.getX());
+                                l.setStartY(((Line) hm.get(s)).getStartY() + mouseEvent.getY());
+                                System.out.println((mouseEvent.getX()-previousX));
+                                System.out.println((mouseEvent.getY()-previousY));
+                                double mx = Math.max(l.getStartX(), l.getEndX());
+                                double my = Math.max(l.getStartY(), l.getEndY());
+
+                                if (mx > DrawingView.drawingPane.getMinWidth()) {
+                                    DrawingView.drawingPane.setMinWidth(mx);
+                                }
+
+                                if (my > DrawingView.drawingPane.getMinHeight()) {
+                                    DrawingView.drawingPane.setMinHeight(my);
+                                }
+                            }
+                        }
+                        previousX = mouseEvent.getX();
+                        previousY = mouseEvent.getY();
+                    }
+                }
+            }
+        });
+
         return line;
     }
 
@@ -87,7 +130,7 @@ public class DrawingController {
                 if (ToolboxView.selectedTool.equals("wall")) {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         Line line = drawLine(mouseEvent);
-                        line.setStyle("-fx-stroke: black;");
+                        line.setStroke(Color.BLACK);
                         Measurement measurement = new Measurement(scene, line, drawingPane, Color.GREY);
                         Wall wall = new Wall(line, measurement);
                         walls.add(wall);
@@ -130,7 +173,7 @@ public class DrawingController {
                 if (ToolboxView.selectedTool.equals("door")) {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         Line line = drawLine(mouseEvent);
-                        line.setStyle("-fx-stroke: saddlebrown;");
+                        line.setStroke(Color.SADDLEBROWN);
                         Measurement measurement = new Measurement(scene, line, drawingPane, Color.BROWN);
                         Door door = new Door(line, measurement);
                         doors.add(door);
