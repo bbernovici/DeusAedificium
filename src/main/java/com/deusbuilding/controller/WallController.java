@@ -26,13 +26,11 @@ public class WallController {
 
     public static void createWallDrawingEvent(final Scene scene) {
         final Pane drawingPane = DrawingView.drawingPane;
-        DrawingView.drawingScrollPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+        DrawingView.drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ScrollPane sp = (ScrollPane) mouseEvent.getSource();
                 if(mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY){
                     System.out.println(mouseEvent.getX() + " " + mouseEvent.getY());
-                    System.out.println(sp.getHvalue() + " " + mouseEvent.getY());
 
                     Line wallLine = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
                     Measurement wallMeasurement = new Measurement(scene, wallLine, drawingPane);
@@ -50,6 +48,16 @@ public class WallController {
                     walls.get(walls.size()-1).getLine().setEndX(mouseEvent.getX());
                     walls.get(walls.size()-1).getLine().setEndY(mouseEvent.getY());
                     walls.get(walls.size()-1).getWallMeasurement().updateMeasurement();
+                    double mx = Math.max(walls.get(walls.size()-1).getLine().getStartX(), walls.get(walls.size()-1).getLine().getEndX());
+                    double my = Math.max(walls.get(walls.size()-1).getLine().getStartY(), walls.get(walls.size()-1).getLine().getEndY());
+
+                    if (mx > drawingPane.getMinWidth()) {
+                        drawingPane.setMinWidth(mx);
+                    }
+
+                    if (my > drawingPane.getMinHeight()) {
+                        drawingPane.setMinHeight(my);
+                    }
                 }
                 if(mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                     ElementNavigatorController.updateWalls();

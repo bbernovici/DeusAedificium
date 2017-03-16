@@ -4,6 +4,7 @@ import com.deusbuilding.controller.WallController;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -16,6 +17,7 @@ public class MenuView {
     public static Menu menuFile;
     public static Menu menuEdit;
     public static Menu menuView;
+    public static Menu menuSimulation;
     private Scene scene;
 
     public MenuView(Scene scene) {
@@ -28,7 +30,15 @@ public class MenuView {
         menuFile = new Menu("File");
         menuEdit = new Menu("Edit");
         menuView = new Menu("View");
-        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+        menuSimulation = new Menu("Simulation");
+
+
+        MenuItem newProject = new MenuItem("New Scenario");
+        MenuItem openProject = new MenuItem("Open Scenario");
+        MenuItem closeProject = new MenuItem("Close Scenario");
+        menuFile.getItems().addAll(newProject, openProject, closeProject);
+
+        menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuSimulation);
         menuPane.getChildren().add(menuBar);
     }
 

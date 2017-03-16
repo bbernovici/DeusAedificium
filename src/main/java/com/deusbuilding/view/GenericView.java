@@ -30,6 +30,10 @@ public class GenericView {
         ElementNavigatorView elementNavigatorView = new ElementNavigatorView(theScene);
         elementNavigatorView.setup();
         genericPane.setRight(elementNavigatorView.getNavPane());
+
+        ToolboxView toolboxView = new ToolboxView(theScene);
+        toolboxView.setup();
+        genericPane.setLeft(toolboxView.getToolBoxPane());
     }
 
     public BorderPane getGenericPane() {
