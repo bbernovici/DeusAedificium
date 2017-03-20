@@ -13,6 +13,8 @@ public class ElementNavigatorView {
     public static TreeItem<String> elementsRoot = new TreeItem<> ("Elements");
     public static TreeItem<String> wallRoot = new TreeItem<> ("Walls");
     public static TreeItem<String> doorRoot = new TreeItem<>("Doors");
+    public static TreeItem<String> windowRoot = new TreeItem<>("Windows");
+
 
     public ElementNavigatorView(Scene scene) {
         this.scene = scene;
@@ -23,7 +25,7 @@ public class ElementNavigatorView {
 
         TreeView<String> tree = new TreeView<>(elementsRoot);
         elementsRoot.setExpanded(true);
-        elementsRoot.getChildren().addAll(wallRoot, doorRoot);
+        elementsRoot.getChildren().addAll(wallRoot, doorRoot, windowRoot);
         navPane.getChildren().add(tree);
     }
 

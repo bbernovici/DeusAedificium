@@ -114,6 +114,14 @@ public class ToolboxView {
         windowButton.setTooltip(windowTooltip);
         toolBoxPane.setConstraints(windowButton, 1, 3);
         toolBoxPane.getChildren().addAll(windowButton);
+        windowButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "window";
+                DrawingView.drawingPane.setCursor(Cursor.CROSSHAIR);
+                windowButton.setStyle("-fx-background-color: lightcoral");
+            }
+        });
 
         //non smart button
         Image nonSmartIcon = new Image(getClass().getResourceAsStream("/icons/nonsmart.png"), 25d, 25d, false, false);

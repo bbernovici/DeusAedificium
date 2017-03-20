@@ -32,5 +32,13 @@ public class ElementNavigatorController {
         }
     }
 
+    public static void updateWindows() {
+        ElementNavigatorView.windowRoot.getChildren().remove(0, ElementNavigatorView.windowRoot.getChildren().size());
+        ElementNavigatorView.windowRoot.setExpanded(true);
+        for (int i = 0; i < DrawingController.windows.size(); i++) {
+            TreeItem<String> item = new TreeItem<> ("Window " + i);
+            ElementNavigatorView.windowRoot.getChildren().add(item);
+        }
+    }
 
 }

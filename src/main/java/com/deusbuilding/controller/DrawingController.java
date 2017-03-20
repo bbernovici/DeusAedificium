@@ -3,11 +3,11 @@ package com.deusbuilding.controller;
 import com.deusbuilding.model.Door;
 import com.deusbuilding.model.Measurement;
 import com.deusbuilding.model.Wall;
+import com.deusbuilding.model.Window;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,14 +29,17 @@ public class DrawingController {
 
     public static ArrayList<Wall> walls = new ArrayList<Wall>();
     public static ArrayList<Door> doors = new ArrayList<Door>();
+    public static ArrayList<Window> windows = new ArrayList<Window>();
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
     public static HashMap<Shape, Paint> selectedElements = new HashMap();
 
     public static void createDrawingEvents(final Scene scene) {
         createWallDrawingEvent(scene);
         createDoorDrawingEvent(scene);
+        createWindowDrawingEvent(scene);
     }
 
+    static HashMap hm = new HashMap();
 
     public static Line drawLine(MouseEvent mouseEvent) {
         final Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
@@ -79,25 +82,44 @@ public class DrawingController {
             }
         });
 
-        //move tool behavior
+        //move tool behavior for lines
         DrawingView.drawingScrollPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (ToolboxView.selectedTool.equals("move")) {
                     double previousX = 0, previousY = 0;
-                    HashMap hm = new HashMap();
+
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         previousX = mouseEvent.getX();
                         previousY = mouseEvent.getY();
+                        System.out.println("org: " + selectedElements.size());
                         hm = (HashMap) selectedElements.clone();
-                        System.out.println(hm.size());
+                        System.out.println("clone: " + hm.size());
                     }
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        //get minimum start x and y from selection
+                        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
                         for (Shape s : selectedElements.keySet()) {
                             if (s.getClass() == Line.class) {
                                 Line l = (Line) s;
-                                l.setStartX(((Line) hm.get(s)).getStartX() + mouseEvent.getX());
-                                l.setStartY(((Line) hm.get(s)).getStartY() + mouseEvent.getY());
+                                if(l.getStartX() < minX) {
+                                    minX = l.getStartX();
+                                }
+                                if(l.getStartY() < minY) {
+                                    minY = l.getStartY();
+                                }
+                            }
+                        }
+                        for (Shape s : selectedElements.keySet()) {
+                            if (s.getClass() == Line.class) {
+                                Line l = (Line) s;
+                                System.out.println(hm.size());
+                                double dirX = minX > mouseEvent.getX() ? -5 : 5;
+                                double dirY = minY > mouseEvent.getY() ? -5 : 5;
+                                l.setStartX(l.getStartX() + dirX);
+                                l.setEndX(l.getEndX() + dirX);
+                                l.setStartY(l.getStartY() + dirY);
+                                l.setEndY(l.getEndY() + dirY);
                                 System.out.println((mouseEvent.getX()-previousX));
                                 System.out.println((mouseEvent.getY()-previousY));
                                 double mx = Math.max(l.getStartX(), l.getEndX());
@@ -112,8 +134,7 @@ public class DrawingController {
                                 }
                             }
                         }
-                        previousX = mouseEvent.getX();
-                        previousY = mouseEvent.getY();
+                        redrawMeasurements();
                     }
                 }
             }
@@ -206,6 +227,61 @@ public class DrawingController {
                 }
             }
         });
+    }
+
+    public static void createWindowDrawingEvent(final Scene scene) {
+        final Pane drawingPane = DrawingView.drawingPane;
+        DrawingView.drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (ToolboxView.selectedTool.equals("window")) {
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        Line line = drawLine(mouseEvent);
+                        line.setStroke(Color.LIGHTBLUE);
+                        Measurement measurement = new Measurement(scene, line, drawingPane, Color.BLUE);
+                        Window window = new Window(line, measurement);
+                        windows.add(window);
+                        drawingPane.getChildren().add(window.getLine());
+                        measurements.add(measurement);
+                        window.getLine().setStrokeWidth(10);
+                        window.getLine().setStartX(mouseEvent.getX());
+                        window.getLine().setStartY(mouseEvent.getY());
+                        window.getLine().setVisible(true);
+                        window.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new WallModifyEventHandler());
+                    }
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && windows.get(windows.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        windows.get(windows.size() - 1).getLine().setEndX(mouseEvent.getX());
+                        windows.get(windows.size() - 1).getLine().setEndY(mouseEvent.getY());
+                        windows.get(windows.size() - 1).getWindowMeasurement().updateMeasurement();
+                        double mx = Math.max(windows.get(windows.size() - 1).getLine().getStartX(), windows.get(windows.size() - 1).getLine().getEndX());
+                        double my = Math.max(windows.get(windows.size() - 1).getLine().getStartY(), windows.get(windows.size() - 1).getLine().getEndY());
+
+                        if (mx > drawingPane.getMinWidth()) {
+                            drawingPane.setMinWidth(mx);
+                        }
+
+                        if (my > drawingPane.getMinHeight()) {
+                            drawingPane.setMinHeight(my);
+                        }
+                    }
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        ElementNavigatorController.updateWindows();
+                    }
+                }
+            }
+        });
+    }
+
+    public static void redrawMeasurements() {
+        for(int i = 0; i<walls.size(); i++) {
+            walls.get(i).getWallMeasurement().updateMeasurement();
+        }
+        for(int i = 0; i<doors.size(); i++) {
+            doors.get(i).getDoorMeasurement().updateMeasurement();
+        }
+        for(int i = 0; i<windows.size(); i++) {
+            windows.get(i).getWindowMeasurement().updateMeasurement();
+        }
     }
 
     private static class WallModifyEventHandler implements EventHandler<MouseEvent> {
