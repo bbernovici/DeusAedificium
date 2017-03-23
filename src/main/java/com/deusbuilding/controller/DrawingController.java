@@ -161,7 +161,7 @@ public class DrawingController {
                         wall.getLine().setStartX(mouseEvent.getX());
                         wall.getLine().setStartY(mouseEvent.getY());
                         wall.getLine().setVisible(true);
-                        wall.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new WallModifyEventHandler());
+                        wall.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && walls.get(walls.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         walls.get(walls.size() - 1).getLine().setEndX(mouseEvent.getX());
@@ -204,7 +204,7 @@ public class DrawingController {
                         door.getLine().setStartX(mouseEvent.getX());
                         door.getLine().setStartY(mouseEvent.getY());
                         door.getLine().setVisible(true);
-                        door.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new WallModifyEventHandler());
+                        door.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && doors.get(doors.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         doors.get(doors.size() - 1).getLine().setEndX(mouseEvent.getX());
@@ -247,7 +247,7 @@ public class DrawingController {
                         window.getLine().setStartX(mouseEvent.getX());
                         window.getLine().setStartY(mouseEvent.getY());
                         window.getLine().setVisible(true);
-                        window.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new WallModifyEventHandler());
+                        window.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && windows.get(windows.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         windows.get(windows.size() - 1).getLine().setEndX(mouseEvent.getX());
@@ -284,7 +284,7 @@ public class DrawingController {
         }
     }
 
-    private static class WallModifyEventHandler implements EventHandler<MouseEvent> {
+    private static class LineModifyEventHandler implements EventHandler<MouseEvent> {
 
         @Override
         public void handle(MouseEvent event) {

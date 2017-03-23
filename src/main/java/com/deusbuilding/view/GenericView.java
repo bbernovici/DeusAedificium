@@ -4,6 +4,7 @@ package com.deusbuilding.view;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 
 public class GenericView {
 
@@ -27,13 +28,24 @@ public class GenericView {
         DrawingView.setup(theScene);
         genericPane.setCenter(DrawingView.drawingScrollPane);
 
-        ElementNavigatorView elementNavigatorView = new ElementNavigatorView(theScene);
-        elementNavigatorView.setup();
-        genericPane.setRight(elementNavigatorView.getNavPane());
-
         ToolboxView toolboxView = new ToolboxView(theScene);
         toolboxView.setup();
         genericPane.setLeft(toolboxView.getToolBoxPane());
+
+        GridPane rightPane = new GridPane();
+
+        ElementNavigatorView elementNavigatorView = new ElementNavigatorView(theScene);
+        elementNavigatorView.setup();
+        rightPane.setConstraints(elementNavigatorView.getNavPane(), 1, 1);
+        rightPane.getChildren().addAll(elementNavigatorView.getNavPane());
+
+        PropertiesView propertiesView = new PropertiesView(theScene);
+        propertiesView.setup();
+        rightPane.setConstraints(propertiesView.getPropertiesTable(), 1, 2);
+        rightPane.getChildren().addAll(propertiesView.getPropertiesTable());
+
+        genericPane.setRight(rightPane);
+
     }
 
     public BorderPane getGenericPane() {
