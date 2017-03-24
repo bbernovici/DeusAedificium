@@ -1,5 +1,6 @@
 package com.deusbuilding.view;
 
+import com.deusbuilding.window.NonSmartObjectsWindow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -131,6 +132,15 @@ public class ToolboxView {
         nonSmartButton.setTooltip(nonSmartTooltip);
         toolBoxPane.setConstraints(nonSmartButton, 2, 3);
         toolBoxPane.getChildren().addAll(nonSmartButton);
+        nonSmartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "non-smart";
+                DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
+                nonSmartButton.setStyle("-fx-background-color: lightcoral");
+                NonSmartObjectsWindow nonSmartObjectsWindow = new NonSmartObjectsWindow();
+            }
+        });
 
         //smart button
         Image smartIcon = new Image(getClass().getResourceAsStream("/icons/smart.png"), 25d, 25d, false, false);
@@ -152,7 +162,7 @@ public class ToolboxView {
 
     }
 
-    public void resetOtherButtons() {
+    public static void resetOtherButtons() {
         toolBoxPane.setStyle(null);
         selectButton.setStyle(null);
         moveButton.setStyle(null);
