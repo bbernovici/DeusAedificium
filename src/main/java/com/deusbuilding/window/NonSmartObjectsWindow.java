@@ -59,7 +59,7 @@ public class NonSmartObjectsWindow {
                 drawingNonSmartPane.getChildren().clear();
                 NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                 for (Vertex v : selectedObject.getVertices()) {
-                    drawingNonSmartPane.getChildren().add(v.getLine());
+                    drawingNonSmartPane.getChildren().add(v);
 
                 }
             }
@@ -167,25 +167,25 @@ public class NonSmartObjectsWindow {
                 if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
                     NonSmartObject nonSmartObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
-                        line.setStroke(Color.BLACK);
-                        Measurement measurement = new Measurement(scene, line, drawingNonSmartPane, Color.GREY);
-                        Vertex vertex = new Vertex(line, measurement);
+                        Measurement measurement = new Measurement(scene, null, drawingNonSmartPane, Color.GREY);
+                        Vertex vertex = new Vertex(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), measurement);
+                        measurement.setLine(vertex);
+                        vertex.setStroke(Color.BLACK);
                         nonSmartObject.getVertices().add(vertex);
-                        drawingNonSmartPane.getChildren().add(vertex.getLine());
+                        drawingNonSmartPane.getChildren().add(vertex);
                         measurements.add(measurement);
-                        vertex.getLine().setStrokeWidth(10);
-                        vertex.getLine().setStartX(mouseEvent.getX());
-                        vertex.getLine().setStartY(mouseEvent.getY());
-                        vertex.getLine().setVisible(true);
+                        vertex.setStrokeWidth(10);
+                        vertex.setStartX(mouseEvent.getX());
+                        vertex.setStartY(mouseEvent.getY());
+                        vertex.setVisible(true);
                         //vertex.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new DrawingController.LineModifyEventHandler());
                     }
-                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndX(mouseEvent.getX());
-                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndY(mouseEvent.getY());
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).setEndX(mouseEvent.getX());
+                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).setEndY(mouseEvent.getY());
                         nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getVertexMeasurementMeasurement().updateMeasurement();
-                        double mx = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartX(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndX());
-                        double my = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartY(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndY());
+                        double mx = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getStartX(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getEndX());
+                        double my = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getStartY(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getEndY());
 
 //                        if (mx > drawingPane.getMinWidth()) {
 //                            drawingPane.setMinWidth(mx);

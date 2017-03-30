@@ -3,17 +3,12 @@ package com.deusbuilding.model;
 import javafx.scene.shape.Line;
 
 
-public class Vertex {
-    private Line line;
+public class Vertex extends Line{
     private Measurement vertexMeasurement;
 
-    public Vertex(Line line, Measurement vertexMeasurement) {
-        this.line = line;
+    public Vertex(double startX, double startY, double endX, double endY, Measurement vertexMeasurement) {
+        super(startX, startY, endX, endY);
         this.vertexMeasurement = vertexMeasurement;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Measurement getVertexMeasurementMeasurement() {

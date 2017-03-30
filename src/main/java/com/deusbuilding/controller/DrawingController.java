@@ -272,6 +272,10 @@ public class DrawingController {
         });
     }
 
+    public static void createNonSmartDrawingEvent() {
+
+    }
+
     public static void redrawMeasurements() {
         for(int i = 0; i<walls.size(); i++) {
             walls.get(i).getWallMeasurement().updateMeasurement();

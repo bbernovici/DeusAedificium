@@ -27,8 +27,15 @@ public class Measurement {
         this.unit = new Text();
         unit.setFill(color);
         unit.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
-        updateMeasurement();
+        if(line != null) {
+            updateMeasurement();
+        }
         root.getChildren().add(unit);
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+        updateMeasurement();
     }
 
     public void updateMeasurement() {
