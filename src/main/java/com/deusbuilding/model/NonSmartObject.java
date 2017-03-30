@@ -11,8 +11,10 @@ public class NonSmartObject {
     private String objectName;
     private String objectType;
 
-    public NonSmartObject() {
+    public NonSmartObject(String objectName, String objectType) {
         vertices = new ArrayList<>();
+        this.objectName = objectName;
+        this.objectType = objectType;
     }
 
     public ArrayList<Vertex> getVertices() {

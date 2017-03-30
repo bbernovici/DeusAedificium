@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,9 +34,10 @@ public class NonSmartObjectsWindow {
     public BorderPane genericNonSmartView;
     VBox leftNonSmartView;
     static Pane drawingNonSmartPane;
-    ListView<String> nonSmartObjectsList;
-    Button newButton, removeButton;
-    static HashMap nonSmartObjects;
+    static ListView<String> nonSmartObjectsList = new ListView<>();
+    ObservableList objectsList;
+    Button newButton, removeButton, placeButton;
+    static HashMap nonSmartObjects = new HashMap<String, NonSmartObject>();
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
 
 
@@ -50,18 +52,32 @@ public class NonSmartObjectsWindow {
         genericNonSmartView = new BorderPane();
         leftNonSmartView = new VBox();
         drawingNonSmartPane = new Pane();
-        nonSmartObjectsList = new ListView<>();
+        nonSmartObjectsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("clicked on " + nonSmartObjectsList.getSelectionModel().getSelectedItem());
+                drawingNonSmartPane.getChildren().clear();
+                NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                for (Vertex v : selectedObject.getVertices()) {
+                    drawingNonSmartPane.getChildren().add(v.getLine());
+
+                }
+            }
+        });
+
+        objectsList = FXCollections.observableArrayList();
+        nonSmartObjectsList.setItems(objectsList);
         newButton = new Button("New object");
         newButton.setMaxWidth(Double.MAX_VALUE);
-        newButton.setPrefHeight(100);
+        newButton.setPrefHeight(50);
         newButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                Stage stage = new Stage();
+                final Stage stage = new Stage();
                 VBox vbox = new VBox();
                 Label nameLabel;
-                TextField nameField;
+                final TextField nameField;
                 Label typeLabel;
-                ComboBox typeField;
+                final ComboBox typeField;
                 nameLabel = new Label("Non-smart object name:");
                 nameField = new TextField();
                 typeLabel = new Label("Non-smart object type:");
@@ -85,6 +101,23 @@ public class NonSmartObjectsWindow {
                 Button createButton = new Button("Create object");
                 createButton.setPrefHeight(50);
                 createButton.setMaxWidth(Double.MAX_VALUE);
+                createButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        if(!nonSmartObjects.containsKey(nameField.getText())) {
+                            nonSmartObjects.put(nameField.getText(), new NonSmartObject(nameField.getText(), typeField.getSelectionModel().getSelectedItem().toString()));
+                            objectsList.add(nameField.getText());
+                            System.out.println(nonSmartObjects.size());
+                            stage.close();
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Warning");
+                            alert.setHeaderText("An object with that name already exists.");
+                            alert.setContentText("Try again with a different name.");
+                            alert.showAndWait();
+                        }
+                    }
+                });
                 vbox.setSpacing(10);
                 vbox.getChildren().addAll(nameLabel, nameField, typeLabel, typeField, createButton);
                 stage.setScene(new Scene(vbox, 300, 180));
@@ -97,18 +130,27 @@ public class NonSmartObjectsWindow {
 
         removeButton = new Button("Remove object");
         removeButton.setMaxWidth(Double.MAX_VALUE);
-        removeButton.setPrefHeight(100);
+        removeButton.setPrefHeight(50);
 
+        placeButton = new Button("Place object");
+        placeButton.setMaxWidth(Double.MAX_VALUE);
+        placeButton.setPrefHeight(100);
+        placeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                DrawingView.drawingPane.setCursor(Cursor.OPEN_HAND);
+                stage.close();
+            }
+        });
 
         drawingNonSmartPane.setStyle("-fx-background-color: antiquewhite");
         drawingNonSmartPane.setBorder(new Border(new BorderStroke(Color.BLACK,
                 BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
-        leftNonSmartView.getChildren().addAll(nonSmartObjectsList, newButton, removeButton);
+        leftNonSmartView.getChildren().addAll(nonSmartObjectsList, newButton, removeButton, placeButton);
         genericNonSmartView.setLeft(leftNonSmartView);
         genericNonSmartView.setCenter(drawingNonSmartPane);
-        nonSmartObjects = new HashMap<String, NonSmartObject>();
-        nonSmartObjects.put("currentKey", new NonSmartObject());
+        //nonSmartObjects.put("currentKey", new NonSmartObject("currentKey", "Static object"));
 
         Scene nonSmartScene = new Scene(genericNonSmartView, 800, 600);
         createDrawingEvent(nonSmartScene);
@@ -122,27 +164,28 @@ public class NonSmartObjectsWindow {
         drawingNonSmartPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                NonSmartObject nonSmartObject = (NonSmartObject) nonSmartObjects.get("currentKey");
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
-                    line.setStroke(Color.BLACK);
-                    Measurement measurement = new Measurement(scene, line, drawingNonSmartPane, Color.GREY);
-                    Vertex vertex = new Vertex(line, measurement);
-                    nonSmartObject.getVertices().add(vertex);
-                    drawingNonSmartPane.getChildren().add(vertex.getLine());
-                    measurements.add(measurement);
-                    vertex.getLine().setStrokeWidth(10);
-                    vertex.getLine().setStartX(mouseEvent.getX());
-                    vertex.getLine().setStartY(mouseEvent.getY());
-                    vertex.getLine().setVisible(true);
-                    //vertex.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new DrawingController.LineModifyEventHandler());
-                }
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndX(mouseEvent.getX());
-                    nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndY(mouseEvent.getY());
-                    nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getVertexMeasurementMeasurement().updateMeasurement();
-                    double mx = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartX(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndX());
-                    double my = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartY(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndY());
+                if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
+                    NonSmartObject nonSmartObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        Line line = new Line(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
+                        line.setStroke(Color.BLACK);
+                        Measurement measurement = new Measurement(scene, line, drawingNonSmartPane, Color.GREY);
+                        Vertex vertex = new Vertex(line, measurement);
+                        nonSmartObject.getVertices().add(vertex);
+                        drawingNonSmartPane.getChildren().add(vertex.getLine());
+                        measurements.add(measurement);
+                        vertex.getLine().setStrokeWidth(10);
+                        vertex.getLine().setStartX(mouseEvent.getX());
+                        vertex.getLine().setStartY(mouseEvent.getY());
+                        vertex.getLine().setVisible(true);
+                        //vertex.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new DrawingController.LineModifyEventHandler());
+                    }
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndX(mouseEvent.getX());
+                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().setEndY(mouseEvent.getY());
+                        nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getVertexMeasurementMeasurement().updateMeasurement();
+                        double mx = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartX(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndX());
+                        double my = Math.max(nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getStartY(), nonSmartObject.getVertices().get(nonSmartObject.getVertices().size() - 1).getLine().getEndY());
 
 //                        if (mx > drawingPane.getMinWidth()) {
 //                            drawingPane.setMinWidth(mx);
@@ -151,10 +194,12 @@ public class NonSmartObjectsWindow {
 //                        if (my > drawingPane.getMinHeight()) {
 //                            drawingPane.setMinHeight(my);
 //                        }
+                    }
                 }
-
             }
         });
     }
+
+
 
 }
