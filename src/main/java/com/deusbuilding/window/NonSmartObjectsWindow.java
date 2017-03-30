@@ -7,7 +7,11 @@ import com.deusbuilding.model.NonSmartObject;
 import com.deusbuilding.model.Vertex;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -15,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -27,14 +32,9 @@ public class NonSmartObjectsWindow {
     public Stage stage;
     public BorderPane genericNonSmartView;
     VBox leftNonSmartView;
-    VBox rightNonSmartView;
     static Pane drawingNonSmartPane;
     ListView<String> nonSmartObjectsList;
     Button newButton, removeButton;
-    Label nameLabel;
-    TextField nameField;
-    Label typeLabel;
-    ComboBox typeField;
     static HashMap nonSmartObjects;
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
 
@@ -49,30 +49,64 @@ public class NonSmartObjectsWindow {
         });
         genericNonSmartView = new BorderPane();
         leftNonSmartView = new VBox();
-        rightNonSmartView = new VBox();
         drawingNonSmartPane = new Pane();
         nonSmartObjectsList = new ListView<>();
         newButton = new Button("New object");
         newButton.setMaxWidth(Double.MAX_VALUE);
-        newButton.setPrefHeight(50);
+        newButton.setPrefHeight(100);
+        newButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                Stage stage = new Stage();
+                VBox vbox = new VBox();
+                Label nameLabel;
+                TextField nameField;
+                Label typeLabel;
+                ComboBox typeField;
+                nameLabel = new Label("Non-smart object name:");
+                nameField = new TextField();
+                typeLabel = new Label("Non-smart object type:");
+                ObservableList<String> types = FXCollections.observableArrayList(
+                        "Static object",
+                        "Bed",
+                        "Shower",
+                        "Sink",
+                        "Toilet seat",
+                        "Stove",
+                        "Fridge",
+                        "Washing Machine",
+                        "Table",
+                        "Chair",
+                        "Wardrobe"
+                );
+
+                typeField = new ComboBox(types);
+                typeField.setValue(types.get(0));
+                typeField.setMaxWidth(Double.MAX_VALUE);
+                Button createButton = new Button("Create object");
+                createButton.setPrefHeight(50);
+                createButton.setMaxWidth(Double.MAX_VALUE);
+                vbox.setSpacing(10);
+                vbox.getChildren().addAll(nameLabel, nameField, typeLabel, typeField, createButton);
+                stage.setScene(new Scene(vbox, 300, 180));
+                stage.setTitle("Create Non-Smart Object");
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.initOwner(((Node) e.getSource()).getScene().getWindow());
+                stage.show();
+            }
+        });
+
         removeButton = new Button("Remove object");
         removeButton.setMaxWidth(Double.MAX_VALUE);
-        removeButton.setPrefHeight(50);
-        nameLabel = new Label("Non-smart object name:");
-        nameField = new TextField();
-        typeLabel = new Label("Non-smart object type:");
-        typeField = new ComboBox();
-        typeField.setMaxWidth(Double.MAX_VALUE);
+        removeButton.setPrefHeight(100);
+
 
         drawingNonSmartPane.setStyle("-fx-background-color: antiquewhite");
         drawingNonSmartPane.setBorder(new Border(new BorderStroke(Color.BLACK,
                 BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
         leftNonSmartView.getChildren().addAll(nonSmartObjectsList, newButton, removeButton);
-        rightNonSmartView.getChildren().addAll(nameLabel, nameField, typeLabel, typeField);
         genericNonSmartView.setLeft(leftNonSmartView);
         genericNonSmartView.setCenter(drawingNonSmartPane);
-        genericNonSmartView.setTop(rightNonSmartView);
         nonSmartObjects = new HashMap<String, NonSmartObject>();
         nonSmartObjects.put("currentKey", new NonSmartObject());
 
