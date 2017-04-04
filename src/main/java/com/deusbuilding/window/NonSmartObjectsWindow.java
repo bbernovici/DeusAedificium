@@ -168,7 +168,8 @@ public class NonSmartObjectsWindow {
                     NonSmartObject nonSmartObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         Measurement measurement = new Measurement(scene, null, drawingNonSmartPane, Color.GREY);
-                        Vertex vertex = new Vertex(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), measurement);
+                        NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                        Vertex vertex = new Vertex(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), measurement, selectedObject.getObjectName());
                         measurement.setLine(vertex);
                         vertex.setStroke(Color.BLACK);
                         nonSmartObject.getVertices().add(vertex);
