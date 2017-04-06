@@ -6,6 +6,7 @@ import com.deusbuilding.model.Measurement;
 import com.deusbuilding.model.NonSmartObject;
 import com.deusbuilding.model.Vertex;
 import com.deusbuilding.view.DrawingView;
+import com.deusbuilding.view.GenericView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,7 +36,7 @@ public class NonSmartObjectsWindow {
     VBox leftNonSmartView;
     static Pane drawingNonSmartPane;
     static ListView<String> nonSmartObjectsList = new ListView<>();
-    ObservableList objectsList;
+    static ObservableList objectsList;
     Button newButton, removeButton, placeButton;
     static HashMap nonSmartObjects = new HashMap<String, NonSmartObject>();
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
@@ -43,6 +44,8 @@ public class NonSmartObjectsWindow {
 
     public NonSmartObjectsWindow() {
         stage = new Stage();
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(GenericView.getInstance().getTheScene().getWindow());
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -55,12 +58,14 @@ public class NonSmartObjectsWindow {
         nonSmartObjectsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("clicked on " + nonSmartObjectsList.getSelectionModel().getSelectedItem());
-                drawingNonSmartPane.getChildren().clear();
-                NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
-                for (Vertex v : selectedObject.getVertices()) {
-                    drawingNonSmartPane.getChildren().add(v);
+                if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
+                    System.out.println("clicked on " + nonSmartObjectsList.getSelectionModel().getSelectedItem());
+                    drawingNonSmartPane.getChildren().clear();
+                    NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    for (Vertex v : selectedObject.getVertices()) {
+                        drawingNonSmartPane.getChildren().add(v);
 
+                    }
                 }
             }
         });
@@ -138,10 +143,14 @@ public class NonSmartObjectsWindow {
         placeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                DrawingView.drawingPane.setCursor(Cursor.OPEN_HAND);
-                NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
-                DrawingController.objectToBePlaced = selectedObject;
-                stage.close();
+                if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
+                    DrawingView.drawingPane.setCursor(Cursor.OPEN_HAND);
+                    NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    DrawingController.objectToBePlaced = selectedObject;
+                    stage.close();
+                } else {
+                    // maybe show an error in the future
+                }
             }
         });
 

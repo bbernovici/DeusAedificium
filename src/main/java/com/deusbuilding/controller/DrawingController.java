@@ -20,6 +20,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,6 +43,7 @@ public class DrawingController {
         createDoorDrawingEvent(scene);
         createWindowDrawingEvent(scene);
         createNonSmartObjectDrawingEvent(scene);
+        createMoveEvent();
     }
 
     static HashMap hm = new HashMap();
@@ -86,7 +89,10 @@ public class DrawingController {
             }
         });
 
-        //move tool behavior for lines
+        return line;
+    }
+
+    public static void createMoveEvent() {
         DrawingView.drawingScrollPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -104,18 +110,18 @@ public class DrawingController {
                         //get minimum start x and y from selection
                         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
                         for (Shape s : selectedElements.keySet()) {
-                            if (s.getClass() == Line.class) {
+                            if (s.getClass() == Line.class || s.getClass() == Vertex.class) {
                                 Line l = (Line) s;
-                                if(l.getStartX() < minX) {
+                                if (l.getStartX() < minX) {
                                     minX = l.getStartX();
                                 }
-                                if(l.getStartY() < minY) {
+                                if (l.getStartY() < minY) {
                                     minY = l.getStartY();
                                 }
                             }
                         }
                         for (Shape s : selectedElements.keySet()) {
-                            if (s.getClass() == Line.class) {
+                            if (s.getClass() == Line.class || s.getClass() == Vertex.class) {
                                 Line l = (Line) s;
                                 System.out.println(hm.size());
                                 double dirX = minX > mouseEvent.getX() ? -5 : 5;
@@ -124,8 +130,8 @@ public class DrawingController {
                                 l.setEndX(l.getEndX() + dirX);
                                 l.setStartY(l.getStartY() + dirY);
                                 l.setEndY(l.getEndY() + dirY);
-                                System.out.println((mouseEvent.getX()-previousX));
-                                System.out.println((mouseEvent.getY()-previousY));
+                                System.out.println((mouseEvent.getX() - previousX));
+                                System.out.println((mouseEvent.getY() - previousY));
                                 double mx = Math.max(l.getStartX(), l.getEndX());
                                 double my = Math.max(l.getStartY(), l.getEndY());
 
@@ -143,8 +149,6 @@ public class DrawingController {
                 }
             }
         });
-
-        return line;
     }
 
     public static void createWallDrawingEvent(final Scene scene) {
@@ -276,6 +280,7 @@ public class DrawingController {
         });
     }
 
+
     public static void createNonSmartObjectDrawingEvent(final Scene scene) {
         final Pane drawingPane = DrawingView.drawingPane;
         DrawingView.drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
@@ -286,11 +291,72 @@ public class DrawingController {
                         NonSmartObject newObject = new NonSmartObject(objectToBePlaced.getObjectName(), objectToBePlaced.getObjectType());
                         newObject.setVertices(objectToBePlaced.getVertices());
                         nonSmartObjects.add(newObject);
-                        for(Vertex v : nonSmartObjects.get(nonSmartObjects.size()-1).getVertices()) {
+                        String hash = new BigInteger(130, new SecureRandom()).toString(32);
+                        int i = 0;
+                        for (Vertex v : nonSmartObjects.get(nonSmartObjects.size() - 1).getVertices()) {
                             Vertex newVertex = new Vertex(v.getStartX(), v.getStartY(), v.getEndX(), v.getEndY(), v.getVertexMeasurementMeasurement(), v.getGroup());
+                            newVertex.setHash(hash);
+                            nonSmartObjects.get(nonSmartObjects.size() - 1).getVertices().set(i, newVertex);
+                            i++;
                             drawingPane.getChildren().add(newVertex);
-                            v.setStrokeWidth(10);
-                            v.setVisible(true);
+                            newVertex.setStrokeWidth(5);
+                            newVertex.setVisible(true);
+                            //select tool for vertex
+                            newVertex.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+                                @Override
+                                public void handle(MouseEvent mouseEvent) {
+                                    if (ToolboxView.selectedTool.equals("select")) {
+                                        if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                                            if (mouseEvent.getSource().getClass() == Vertex.class) {
+                                                Vertex currentSelected = (Vertex) mouseEvent.getSource();
+                                                if (mouseEvent.isControlDown()) {
+                                                    if (currentSelected.getStroke() == Color.RED) {
+                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                            for (Vertex v : nso.getVertices()) {
+                                                                if (currentSelected.getHash().equals(v.getHash())) {
+                                                                    v.setStroke(selectedElements.get(v));
+                                                                    selectedElements.remove(v);
+                                                                }
+                                                            }
+                                                        }
+                                                    } else {
+                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                            for (Vertex v : nso.getVertices()) {
+                                                                if (currentSelected.getHash().equals(v.getHash())) {
+                                                                    selectedElements.put(v, v.getStroke());
+                                                                    v.setStroke(Color.RED);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    if (currentSelected.getStroke() == Color.RED) {
+                                                        for (Shape s : selectedElements.keySet()) {
+                                                            s.setStroke(selectedElements.get(s));
+                                                        }
+                                                        selectedElements.clear();
+                                                    } else {
+                                                        for (Shape s : selectedElements.keySet()) {
+                                                            s.setStroke(selectedElements.get(s));
+                                                        }
+                                                        selectedElements.clear();
+                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                            for (Vertex v : nso.getVertices()) {
+                                                                System.out.println(v.getHash());
+                                                                if (currentSelected.getHash().equals(v.getHash())) {
+                                                                    System.out.println(v.getHash());
+                                                                    selectedElements.put(v, v.getStroke());
+                                                                    v.setStroke(Color.RED);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
                             resetOtherButtons();
                             ToolboxView.selectedTool = "select";
                             DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
@@ -310,13 +376,13 @@ public class DrawingController {
     }
 
     public static void redrawMeasurements() {
-        for(int i = 0; i<walls.size(); i++) {
+        for (int i = 0; i < walls.size(); i++) {
             walls.get(i).getWallMeasurement().updateMeasurement();
         }
-        for(int i = 0; i<doors.size(); i++) {
+        for (int i = 0; i < doors.size(); i++) {
             doors.get(i).getDoorMeasurement().updateMeasurement();
         }
-        for(int i = 0; i<windows.size(); i++) {
+        for (int i = 0; i < windows.size(); i++) {
             windows.get(i).getWindowMeasurement().updateMeasurement();
         }
     }
