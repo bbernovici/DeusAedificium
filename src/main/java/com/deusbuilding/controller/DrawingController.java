@@ -1,13 +1,11 @@
 package com.deusbuilding.controller;
 
-import com.deusbuilding.model.Door;
-import com.deusbuilding.model.Measurement;
-import com.deusbuilding.model.Wall;
-import com.deusbuilding.model.Window;
+import com.deusbuilding.model.*;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,11 +23,16 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.deusbuilding.view.ToolboxView.resetOtherButtons;
+import static com.deusbuilding.view.ToolboxView.selectButton;
+
 public class DrawingController {
 
     public static ArrayList<Wall> walls = new ArrayList<Wall>();
     public static ArrayList<Door> doors = new ArrayList<Door>();
     public static ArrayList<Window> windows = new ArrayList<Window>();
+    public static ArrayList<NonSmartObject> nonSmartObjects = new ArrayList<>();
+    public static NonSmartObject objectToBePlaced = new NonSmartObject("empty", "empty");
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
     public static HashMap<Shape, Paint> selectedElements = new HashMap();
 
@@ -37,6 +40,7 @@ public class DrawingController {
         createWallDrawingEvent(scene);
         createDoorDrawingEvent(scene);
         createWindowDrawingEvent(scene);
+        createNonSmartObjectDrawingEvent(scene);
     }
 
     static HashMap hm = new HashMap();
@@ -267,6 +271,35 @@ public class DrawingController {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         ElementNavigatorController.updateWindows();
                     }
+                }
+            }
+        });
+    }
+
+    public static void createNonSmartObjectDrawingEvent(final Scene scene) {
+        final Pane drawingPane = DrawingView.drawingPane;
+        DrawingView.drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (ToolboxView.selectedTool.equals("non-smart")) {
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        NonSmartObject newObject = new NonSmartObject(objectToBePlaced.getObjectName(), objectToBePlaced.getObjectType());
+                        newObject.setVertices(objectToBePlaced.getVertices());
+                        nonSmartObjects.add(newObject);
+                        for(Vertex v : nonSmartObjects.get(nonSmartObjects.size()-1).getVertices()) {
+                            Vertex newVertex = new Vertex(v.getStartX(), v.getStartY(), v.getEndX(), v.getEndY(), v.getVertexMeasurementMeasurement(), v.getGroup());
+                            drawingPane.getChildren().add(newVertex);
+                            v.setStrokeWidth(10);
+                            v.setVisible(true);
+                            resetOtherButtons();
+                            ToolboxView.selectedTool = "select";
+                            DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
+                            selectButton.setStyle("-fx-background-color: lightcoral");
+                        }
+                    }
+//                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+//                        ElementNavigatorController.updateWindows();
+//                    }
                 }
             }
         });

@@ -139,6 +139,8 @@ public class NonSmartObjectsWindow {
             @Override
             public void handle(ActionEvent event) {
                 DrawingView.drawingPane.setCursor(Cursor.OPEN_HAND);
+                NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                DrawingController.objectToBePlaced = selectedObject;
                 stage.close();
             }
         });
