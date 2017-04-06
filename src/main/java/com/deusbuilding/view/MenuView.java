@@ -36,6 +36,10 @@ public class MenuView {
         MenuItem closeProject = new MenuItem("Close Scenario");
         menuFile.getItems().addAll(newProject, openProject, closeProject);
 
+        MenuItem stochasticSimulation = new MenuItem("Run Stochastic (AI-powered) Simulation");
+        MenuItem deterministicSimulation = new MenuItem("Run Deterministic Simulation");
+        menuSimulation.getItems().addAll(stochasticSimulation, deterministicSimulation);
+
         menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuSimulation);
         menuPane.getChildren().add(menuBar);
     }
