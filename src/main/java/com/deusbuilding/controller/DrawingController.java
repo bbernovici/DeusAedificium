@@ -1,6 +1,7 @@
 package com.deusbuilding.controller;
 
 import com.deusbuilding.model.*;
+import com.deusbuilding.util.Functions;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
@@ -363,17 +364,14 @@ public class DrawingController {
                             selectButton.setStyle("-fx-background-color: lightcoral");
                         }
                     }
-//                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED && mouseEvent.getButton() == MouseButton.PRIMARY) {
-//                        ElementNavigatorController.updateWindows();
-//                    }
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        ElementNavigatorController.updateNonSmartObjects();
+                    }
                 }
             }
         });
     }
 
-    public static void createNonSmartDrawingEvent() {
-
-    }
 
     public static void redrawMeasurements() {
         for (int i = 0; i < walls.size(); i++) {
@@ -391,27 +389,26 @@ public class DrawingController {
 
         @Override
         public void handle(MouseEvent event) {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                System.out.println("right clicked on it");
+            if (event.getButton() == MouseButton.SECONDARY && ToolboxView.selectedTool.equals("select")) {
                 Stage stage = new Stage();
                 VBox wallStack = new VBox();
-                final Line wallElement = (Line) event.getSource();
-                final Label lineStartXLabel = new Label("Line start (X):");
-                final TextField lineStartXText = new TextField(String.valueOf(wallElement.getStartX()));
-                Label lineStartYLabel = new Label("Line start (Y):");
-                final TextField lineStartYText = new TextField(String.valueOf(wallElement.getStartY()));
-                Label lineEndXLabel = new Label("Line end (X):");
-                final TextField lineEndXText = new TextField(String.valueOf(wallElement.getEndX()));
-                Label lineEndYLabel = new Label("Line end (Y):");
-                final TextField lineEndYText = new TextField(String.valueOf(wallElement.getEndY()));
+                final Line element = (Line) event.getSource();
+                final Label lineStartXLabel = new Label("Element start (X):");
+                final TextField lineStartXText = new TextField(String.valueOf(Functions.transformFromPixelsToMeters(element.getStartX())));
+                Label lineStartYLabel = new Label("Element start (Y):");
+                final TextField lineStartYText = new TextField(String.valueOf(Functions.transformFromPixelsToMeters(element.getStartY())));
+                Label lineEndXLabel = new Label("Element end (X):");
+                final TextField lineEndXText = new TextField(String.valueOf(Functions.transformFromPixelsToMeters(element.getEndX())));
+                Label lineEndYLabel = new Label("Element end (Y):");
+                final TextField lineEndYText = new TextField(String.valueOf(Functions.transformFromPixelsToMeters(element.getEndY())));
                 Button applyWallChangesButton = new Button("Apply changes");
                 applyWallChangesButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        wallElement.setStartX(Double.valueOf(lineStartXText.getText()));
-                        wallElement.setStartY(Double.valueOf(lineStartYText.getText()));
-                        wallElement.setEndX(Double.valueOf(lineEndXText.getText()));
-                        wallElement.setEndY(Double.valueOf(lineEndYText.getText()));
+                        element.setStartX(Functions.transformFromMetersToPixels(Double.valueOf(lineStartXText.getText())));
+                        element.setStartY(Functions.transformFromMetersToPixels(Double.valueOf(lineStartYText.getText())));
+                        element.setEndX(Functions.transformFromMetersToPixels(Double.valueOf(lineEndXText.getText())));
+                        element.setEndY(Functions.transformFromMetersToPixels(Double.valueOf(lineEndYText.getText())));
                     }
                 });
                 wallStack.getChildren().addAll(lineStartXLabel,
@@ -423,7 +420,7 @@ public class DrawingController {
                         lineEndYLabel,
                         lineEndYText,
                         applyWallChangesButton);
-                stage.setTitle("Modify wall");
+                stage.setTitle("Modify element");
                 stage.setScene(new Scene(wallStack, 250, 400));
                 stage.show();
             }

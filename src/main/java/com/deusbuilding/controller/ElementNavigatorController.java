@@ -18,7 +18,7 @@ public class ElementNavigatorController {
         ElementNavigatorView.wallRoot.getChildren().remove(0, ElementNavigatorView.wallRoot.getChildren().size());
         ElementNavigatorView.wallRoot.setExpanded(true);
         for (int i = 0; i < DrawingController.walls.size(); i++) {
-            TreeItem<String> item = new TreeItem<> ("Wall " + i);
+            TreeItem<String> item = new TreeItem<> ("Wall (ID: " + i + ")");
             ElementNavigatorView.wallRoot.getChildren().add(item);
         }
     }
@@ -27,7 +27,7 @@ public class ElementNavigatorController {
         ElementNavigatorView.doorRoot.getChildren().remove(0, ElementNavigatorView.doorRoot.getChildren().size());
         ElementNavigatorView.doorRoot.setExpanded(true);
         for (int i = 0; i < DrawingController.doors.size(); i++) {
-            TreeItem<String> item = new TreeItem<> ("Wall " + i);
+            TreeItem<String> item = new TreeItem<> ("Door (ID: " + i + ")");
             ElementNavigatorView.doorRoot.getChildren().add(item);
         }
     }
@@ -36,8 +36,17 @@ public class ElementNavigatorController {
         ElementNavigatorView.windowRoot.getChildren().remove(0, ElementNavigatorView.windowRoot.getChildren().size());
         ElementNavigatorView.windowRoot.setExpanded(true);
         for (int i = 0; i < DrawingController.windows.size(); i++) {
-            TreeItem<String> item = new TreeItem<> ("Window " + i);
+            TreeItem<String> item = new TreeItem<> ("Window (ID: " + i + ")");
             ElementNavigatorView.windowRoot.getChildren().add(item);
+        }
+    }
+
+    public static void updateNonSmartObjects() {
+        ElementNavigatorView.nonSmartRoot.getChildren().remove(0, ElementNavigatorView.nonSmartRoot.getChildren().size());
+        ElementNavigatorView.nonSmartRoot.setExpanded(true);
+        for (int i = 0; i < DrawingController.nonSmartObjects.size(); i++) {
+            TreeItem<String> item = new TreeItem<> (DrawingController.nonSmartObjects.get(i).getObjectType() + " (ID: " + i + ")");
+            ElementNavigatorView.nonSmartRoot.getChildren().add(item);
         }
     }
 
