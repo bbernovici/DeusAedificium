@@ -142,14 +142,14 @@ public class ToolboxView {
             }
         });
 
-        //smart button
-        Image smartIcon = new Image(getClass().getResourceAsStream("/icons/smart.png"), 25d, 25d, false, false);
-        smartButton = new Button("", new ImageView(smartIcon));
-        Tooltip smartTooltip = new Tooltip("Place Smart Object");
-        smartTooltip.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
-        smartButton.setTooltip(smartTooltip);
-        toolBoxPane.setConstraints(smartButton, 1, 4);
-        toolBoxPane.getChildren().addAll(smartButton);
+//        //smart button
+//        Image smartIcon = new Image(getClass().getResourceAsStream("/icons/smart.png"), 25d, 25d, false, false);
+//        smartButton = new Button("", new ImageView(smartIcon));
+//        Tooltip smartTooltip = new Tooltip("Place Smart Object");
+//        smartTooltip.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+//        smartButton.setTooltip(smartTooltip);
+//        toolBoxPane.setConstraints(smartButton, 1, 4);
+//        toolBoxPane.getChildren().addAll(smartButton);
 
         //sensor button
         Image sensorIcon = new Image(getClass().getResourceAsStream("/icons/sensor.png"), 25d, 25d, false, false);
@@ -157,7 +157,7 @@ public class ToolboxView {
         Tooltip sensorTooltip = new Tooltip("Place Sensor");
         sensorTooltip.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         sensorButton.setTooltip(sensorTooltip);
-        toolBoxPane.setConstraints(sensorButton, 2, 4 );
+        toolBoxPane.setConstraints(sensorButton, 1, 4 );
         toolBoxPane.getChildren().addAll(sensorButton);
 
     }
