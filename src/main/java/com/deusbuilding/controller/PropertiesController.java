@@ -5,6 +5,7 @@ import com.deusbuilding.model.Property;
 import com.deusbuilding.model.Wall;
 import com.deusbuilding.model.Window;
 import com.deusbuilding.util.Functions;
+import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.ElementNavigatorView;
 import com.deusbuilding.view.PropertiesView;
 import javafx.collections.FXCollections;
@@ -30,7 +31,7 @@ public class PropertiesController {
                     TreeItem<String> element = ElementNavigatorView.tree.getSelectionModel().getSelectedItem();
                     if(element.getParent().getValue().equals("Walls")) {
                         PropertiesView.propertyTable.getItems().clear();
-                        Wall w = DrawingController.walls.get(element.getParent().getChildren().indexOf(element));
+                        Wall w = Vault.walls.get(element.getParent().getChildren().indexOf(element));
                         final ObservableList<Property> data = FXCollections.observableArrayList(
                                 new Property("Wall start (X)", String.valueOf(Functions.transformFromPixelsToMeters(w.getLine().getStartX())) + "m"),
                                 new Property("Wall start (Y)", String.valueOf(Functions.transformFromPixelsToMeters(w.getLine().getStartY()))+ "m"),
@@ -41,7 +42,7 @@ public class PropertiesController {
                         PropertiesView.propertyTable.setItems(data);
                     } else if (element.getParent().getValue().equals("Doors")) {
                         PropertiesView.propertyTable.getItems().clear();
-                        Door d = DrawingController.doors.get(element.getParent().getChildren().indexOf(element));
+                        Door d = Vault.doors.get(element.getParent().getChildren().indexOf(element));
                         final ObservableList<Property> data = FXCollections.observableArrayList(
                                 new Property("Door start (X)", String.valueOf(Functions.transformFromPixelsToMeters(d.getLine().getStartX())) + "m"),
                                 new Property("Door start (Y)", String.valueOf(Functions.transformFromPixelsToMeters(d.getLine().getStartY()))+ "m"),
@@ -52,7 +53,7 @@ public class PropertiesController {
                         PropertiesView.propertyTable.setItems(data);
                     } else if (element.getParent().getValue().equals("Windows")) {
                         PropertiesView.propertyTable.getItems().clear();
-                        Window w = DrawingController.windows.get(element.getParent().getChildren().indexOf(element));
+                        Window w = Vault.windows.get(element.getParent().getChildren().indexOf(element));
                         final ObservableList<Property> data = FXCollections.observableArrayList(
                                 new Property("Window start (X)", String.valueOf(Functions.transformFromPixelsToMeters(w.getLine().getStartX())) + "m"),
                                 new Property("Window start (Y)", String.valueOf(Functions.transformFromPixelsToMeters(w.getLine().getStartY()))+ "m"),

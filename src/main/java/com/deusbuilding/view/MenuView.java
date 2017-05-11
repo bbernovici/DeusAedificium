@@ -1,5 +1,8 @@
 package com.deusbuilding.view;
 
+import com.deusbuilding.window.StochasticSimulationWindow;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -37,6 +40,12 @@ public class MenuView {
         menuFile.getItems().addAll(newProject, openProject, closeProject);
 
         MenuItem stochasticSimulation = new MenuItem("Run Stochastic (AI-powered) Simulation");
+        stochasticSimulation.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                StochasticSimulationWindow stochasticWindow = new StochasticSimulationWindow();
+            }
+        }) ;
         MenuItem deterministicSimulation = new MenuItem("Run Deterministic Simulation");
         menuSimulation.getItems().addAll(stochasticSimulation, deterministicSimulation);
 

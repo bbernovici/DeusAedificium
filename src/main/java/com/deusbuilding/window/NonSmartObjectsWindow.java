@@ -5,6 +5,7 @@ import com.deusbuilding.controller.ElementNavigatorController;
 import com.deusbuilding.model.Measurement;
 import com.deusbuilding.model.NonSmartObject;
 import com.deusbuilding.model.Vertex;
+import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.GenericView;
 import com.deusbuilding.view.ToolboxView;
@@ -36,9 +37,7 @@ public class NonSmartObjectsWindow {
     VBox leftNonSmartView;
     static Pane drawingNonSmartPane;
     static ListView<String> nonSmartObjectsList = new ListView<>();
-    static ObservableList objectsList;
     Button newButton, removeButton, placeButton;
-    static HashMap nonSmartObjects = new HashMap<String, NonSmartObject>();
     public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
 
 
@@ -61,17 +60,18 @@ public class NonSmartObjectsWindow {
                 if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
                     System.out.println("clicked on " + nonSmartObjectsList.getSelectionModel().getSelectedItem());
                     drawingNonSmartPane.getChildren().clear();
-                    NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    NonSmartObject selectedObject = ((NonSmartObject) Vault.mapNonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                     for (Vertex v : selectedObject.getVertices()) {
-                        drawingNonSmartPane.getChildren().add(v);
+                        Vertex newVertex = new Vertex(v.getStartX(), v.getStartY(), v.getEndX(), v.getEndY(), v.getVertexMeasurementMeasurement(), v.getGroup());
+                        newVertex.setStrokeWidth(10);
+                        drawingNonSmartPane.getChildren().add(newVertex);
 
                     }
                 }
             }
         });
 
-        objectsList = FXCollections.observableArrayList();
-        nonSmartObjectsList.setItems(objectsList);
+        nonSmartObjectsList.setItems(Vault.obsNonSmartobjectsList);
         newButton = new Button("New object");
         newButton.setMaxWidth(Double.MAX_VALUE);
         newButton.setPrefHeight(50);
@@ -87,17 +87,10 @@ public class NonSmartObjectsWindow {
                 nameField = new TextField();
                 typeLabel = new Label("Non-smart object type:");
                 ObservableList<String> types = FXCollections.observableArrayList(
-                        "Static object",
-                        "Bed",
-                        "Shower",
-                        "Sink",
-                        "Toilet seat",
-                        "Stove",
-                        "Fridge",
-                        "Washing Machine",
-                        "Table",
-                        "Chair",
-                        "Wardrobe"
+                        "Hunger",
+                        "Energy",
+                        "Hygiene",
+                        "Bladder"
                 );
 
                 typeField = new ComboBox(types);
@@ -109,10 +102,10 @@ public class NonSmartObjectsWindow {
                 createButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        if(!nonSmartObjects.containsKey(nameField.getText())) {
-                            nonSmartObjects.put(nameField.getText(), new NonSmartObject(nameField.getText(), typeField.getSelectionModel().getSelectedItem().toString()));
-                            objectsList.add(nameField.getText());
-                            System.out.println(nonSmartObjects.size());
+                        if(!Vault.mapNonSmartObjects.containsKey(nameField.getText())) {
+                            Vault.mapNonSmartObjects.put(nameField.getText(), new NonSmartObject(nameField.getText(), typeField.getSelectionModel().getSelectedItem().toString()));
+                            Vault.obsNonSmartobjectsList.add(nameField.getText());
+                            System.out.println(Vault.mapNonSmartObjects.size());
                             stage.close();
                         } else {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -145,11 +138,15 @@ public class NonSmartObjectsWindow {
             public void handle(ActionEvent event) {
                 if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
                     DrawingView.drawingPane.setCursor(Cursor.OPEN_HAND);
-                    NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
-                    DrawingController.objectToBePlaced = selectedObject;
+                    NonSmartObject selectedObject = ((NonSmartObject) Vault.mapNonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    Vault.objectToBePlaced = selectedObject;
                     stage.close();
                 } else {
-                    // maybe show an error in the future
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Warning");
+                    alert.setHeaderText("No object selected");
+                    alert.setContentText("Select an object and try again.");
+                    alert.showAndWait();
                 }
             }
         });
@@ -176,10 +173,10 @@ public class NonSmartObjectsWindow {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(!nonSmartObjectsList.getSelectionModel().isEmpty()) {
-                    NonSmartObject nonSmartObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                    NonSmartObject nonSmartObject = ((NonSmartObject) Vault.mapNonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         Measurement measurement = new Measurement(scene, null, drawingNonSmartPane, Color.GREY);
-                        NonSmartObject selectedObject = ((NonSmartObject) nonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
+                        NonSmartObject selectedObject = ((NonSmartObject) Vault.mapNonSmartObjects.get(nonSmartObjectsList.getSelectionModel().getSelectedItem()));
                         Vertex vertex = new Vertex(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), measurement, selectedObject.getObjectName());
                         measurement.setLine(vertex);
                         vertex.setStroke(Color.BLACK);

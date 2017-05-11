@@ -2,6 +2,7 @@ package com.deusbuilding.controller;
 
 import com.deusbuilding.model.*;
 import com.deusbuilding.util.Functions;
+import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
@@ -31,14 +32,6 @@ import static com.deusbuilding.view.ToolboxView.selectButton;
 
 public class DrawingController {
 
-    public static ArrayList<Wall> walls = new ArrayList<Wall>();
-    public static ArrayList<Door> doors = new ArrayList<Door>();
-    public static ArrayList<Window> windows = new ArrayList<Window>();
-    public static ArrayList<NonSmartObject> nonSmartObjects = new ArrayList<>();
-    public static NonSmartObject objectToBePlaced = new NonSmartObject("empty", "empty");
-    public static ArrayList<Measurement> measurements = new ArrayList<Measurement>();
-    public static HashMap<Shape, Paint> selectedElements = new HashMap();
-
     public static void createDrawingEvents(final Scene scene) {
         createWallDrawingEvent(scene);
         createDoorDrawingEvent(scene);
@@ -63,24 +56,24 @@ public class DrawingController {
                             Line currentSelected = (Line) mouseEvent.getSource();
                             if (mouseEvent.isControlDown()) {
                                 if (currentSelected.getStroke() == Color.RED) {
-                                    currentSelected.setStroke(selectedElements.get(currentSelected));
-                                    selectedElements.remove(currentSelected);
+                                    currentSelected.setStroke(Vault.selectedElements.get(currentSelected));
+                                    Vault.selectedElements.remove(currentSelected);
                                 } else {
-                                    selectedElements.put(currentSelected, currentSelected.getStroke());
+                                    Vault. selectedElements.put(currentSelected, currentSelected.getStroke());
                                     currentSelected.setStroke(Color.RED);
                                 }
                             } else {
                                 if (currentSelected.getStroke() == Color.RED) {
-                                    for (Shape s : selectedElements.keySet()) {
-                                        s.setStroke(selectedElements.get(s));
+                                    for (Shape s : Vault.selectedElements.keySet()) {
+                                        s.setStroke(Vault.selectedElements.get(s));
                                     }
-                                    selectedElements.clear();
+                                    Vault.selectedElements.clear();
                                 } else {
-                                    for (Shape s : selectedElements.keySet()) {
-                                        s.setStroke(selectedElements.get(s));
+                                    for (Shape s : Vault.selectedElements.keySet()) {
+                                        s.setStroke(Vault.selectedElements.get(s));
                                     }
-                                    selectedElements.clear();
-                                    selectedElements.put(currentSelected, currentSelected.getStroke());
+                                    Vault.selectedElements.clear();
+                                    Vault.selectedElements.put(currentSelected, currentSelected.getStroke());
                                     currentSelected.setStroke(Color.RED);
                                 }
                             }
@@ -103,14 +96,14 @@ public class DrawingController {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         previousX = mouseEvent.getX();
                         previousY = mouseEvent.getY();
-                        System.out.println("org: " + selectedElements.size());
-                        hm = (HashMap) selectedElements.clone();
+                        System.out.println("org: " + Vault.selectedElements.size());
+                        hm = (HashMap) Vault.selectedElements.clone();
                         System.out.println("clone: " + hm.size());
                     }
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                         //get minimum start x and y from selection
                         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
-                        for (Shape s : selectedElements.keySet()) {
+                        for (Shape s : Vault.selectedElements.keySet()) {
                             if (s.getClass() == Line.class || s.getClass() == Vertex.class) {
                                 Line l = (Line) s;
                                 if (l.getStartX() < minX) {
@@ -121,7 +114,7 @@ public class DrawingController {
                                 }
                             }
                         }
-                        for (Shape s : selectedElements.keySet()) {
+                        for (Shape s : Vault.selectedElements.keySet()) {
                             if (s.getClass() == Line.class || s.getClass() == Vertex.class) {
                                 Line l = (Line) s;
                                 System.out.println(hm.size());
@@ -163,21 +156,21 @@ public class DrawingController {
                         line.setStroke(Color.BLACK);
                         Measurement measurement = new Measurement(scene, line, drawingPane, Color.GREY);
                         Wall wall = new Wall(line, measurement);
-                        walls.add(wall);
+                        Vault.walls.add(wall);
                         drawingPane.getChildren().add(wall.getLine());
-                        measurements.add(measurement);
+                        Vault.measurements.add(measurement);
                         wall.getLine().setStrokeWidth(10);
                         wall.getLine().setStartX(mouseEvent.getX());
                         wall.getLine().setStartY(mouseEvent.getY());
                         wall.getLine().setVisible(true);
                         wall.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
-                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && walls.get(walls.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        walls.get(walls.size() - 1).getLine().setEndX(mouseEvent.getX());
-                        walls.get(walls.size() - 1).getLine().setEndY(mouseEvent.getY());
-                        walls.get(walls.size() - 1).getWallMeasurement().updateMeasurement();
-                        double mx = Math.max(walls.get(walls.size() - 1).getLine().getStartX(), walls.get(walls.size() - 1).getLine().getEndX());
-                        double my = Math.max(walls.get(walls.size() - 1).getLine().getStartY(), walls.get(walls.size() - 1).getLine().getEndY());
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && Vault.walls.get(Vault.walls.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        Vault.walls.get(Vault.walls.size() - 1).getLine().setEndX(mouseEvent.getX());
+                        Vault.walls.get(Vault.walls.size() - 1).getLine().setEndY(mouseEvent.getY());
+                        Vault.walls.get(Vault.walls.size() - 1).getWallMeasurement().updateMeasurement();
+                        double mx = Math.max(Vault.walls.get(Vault.walls.size() - 1).getLine().getStartX(), Vault.walls.get(Vault.walls.size() - 1).getLine().getEndX());
+                        double my = Math.max(Vault.walls.get(Vault.walls.size() - 1).getLine().getStartY(), Vault.walls.get(Vault.walls.size() - 1).getLine().getEndY());
 
                         if (mx > drawingPane.getMinWidth()) {
                             drawingPane.setMinWidth(mx);
@@ -206,21 +199,21 @@ public class DrawingController {
                         line.setStroke(Color.SADDLEBROWN);
                         Measurement measurement = new Measurement(scene, line, drawingPane, Color.BROWN);
                         Door door = new Door(line, measurement);
-                        doors.add(door);
+                        Vault.doors.add(door);
                         drawingPane.getChildren().add(door.getLine());
-                        measurements.add(measurement);
+                        Vault.measurements.add(measurement);
                         door.getLine().setStrokeWidth(10);
                         door.getLine().setStartX(mouseEvent.getX());
                         door.getLine().setStartY(mouseEvent.getY());
                         door.getLine().setVisible(true);
                         door.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
-                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && doors.get(doors.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        doors.get(doors.size() - 1).getLine().setEndX(mouseEvent.getX());
-                        doors.get(doors.size() - 1).getLine().setEndY(mouseEvent.getY());
-                        doors.get(doors.size() - 1).getDoorMeasurement().updateMeasurement();
-                        double mx = Math.max(doors.get(doors.size() - 1).getLine().getStartX(), doors.get(doors.size() - 1).getLine().getEndX());
-                        double my = Math.max(doors.get(doors.size() - 1).getLine().getStartY(), doors.get(doors.size() - 1).getLine().getEndY());
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && Vault.doors.get(Vault.doors.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        Vault.doors.get(Vault.doors.size() - 1).getLine().setEndX(mouseEvent.getX());
+                        Vault.doors.get(Vault.doors.size() - 1).getLine().setEndY(mouseEvent.getY());
+                        Vault.doors.get(Vault.doors.size() - 1).getDoorMeasurement().updateMeasurement();
+                        double mx = Math.max(Vault.doors.get(Vault.doors.size() - 1).getLine().getStartX(), Vault.doors.get(Vault.doors.size() - 1).getLine().getEndX());
+                        double my = Math.max(Vault.doors.get(Vault.doors.size() - 1).getLine().getStartY(), Vault.doors.get(Vault.doors.size() - 1).getLine().getEndY());
 
                         if (mx > drawingPane.getMinWidth()) {
                             drawingPane.setMinWidth(mx);
@@ -249,21 +242,21 @@ public class DrawingController {
                         line.setStroke(Color.LIGHTBLUE);
                         Measurement measurement = new Measurement(scene, line, drawingPane, Color.BLUE);
                         Window window = new Window(line, measurement);
-                        windows.add(window);
+                        Vault.windows.add(window);
                         drawingPane.getChildren().add(window.getLine());
-                        measurements.add(measurement);
+                        Vault.measurements.add(measurement);
                         window.getLine().setStrokeWidth(10);
                         window.getLine().setStartX(mouseEvent.getX());
                         window.getLine().setStartY(mouseEvent.getY());
                         window.getLine().setVisible(true);
                         window.getLine().addEventFilter(MouseEvent.MOUSE_CLICKED, new LineModifyEventHandler());
                     }
-                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && windows.get(windows.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        windows.get(windows.size() - 1).getLine().setEndX(mouseEvent.getX());
-                        windows.get(windows.size() - 1).getLine().setEndY(mouseEvent.getY());
-                        windows.get(windows.size() - 1).getWindowMeasurement().updateMeasurement();
-                        double mx = Math.max(windows.get(windows.size() - 1).getLine().getStartX(), windows.get(windows.size() - 1).getLine().getEndX());
-                        double my = Math.max(windows.get(windows.size() - 1).getLine().getStartY(), windows.get(windows.size() - 1).getLine().getEndY());
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && Vault.windows.get(Vault.windows.size() - 1).getLine().isVisible() && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        Vault.windows.get(Vault.windows.size() - 1).getLine().setEndX(mouseEvent.getX());
+                        Vault.windows.get(Vault.windows.size() - 1).getLine().setEndY(mouseEvent.getY());
+                        Vault.windows.get(Vault.windows.size() - 1).getWindowMeasurement().updateMeasurement();
+                        double mx = Math.max(Vault.windows.get(Vault.windows.size() - 1).getLine().getStartX(), Vault.windows.get(Vault.windows.size() - 1).getLine().getEndX());
+                        double my = Math.max(Vault.windows.get(Vault.windows.size() - 1).getLine().getStartY(), Vault.windows.get(Vault.windows.size() - 1).getLine().getEndY());
 
                         if (mx > drawingPane.getMinWidth()) {
                             drawingPane.setMinWidth(mx);
@@ -289,15 +282,15 @@ public class DrawingController {
             public void handle(MouseEvent mouseEvent) {
                 if (ToolboxView.selectedTool.equals("non-smart")) {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        NonSmartObject newObject = new NonSmartObject(objectToBePlaced.getObjectName(), objectToBePlaced.getObjectType());
-                        newObject.setVertices(objectToBePlaced.getVertices());
-                        nonSmartObjects.add(newObject);
+                        NonSmartObject newObject = new NonSmartObject(Vault.objectToBePlaced.getObjectName(), Vault.objectToBePlaced.getObjectType());
+                        newObject.setVertices(Vault.objectToBePlaced.getVertices());
+                        Vault.nonSmartObjects.add(newObject);
                         String hash = new BigInteger(130, new SecureRandom()).toString(32);
                         int i = 0;
-                        for (Vertex v : nonSmartObjects.get(nonSmartObjects.size() - 1).getVertices()) {
+                        for (Vertex v : Vault.nonSmartObjects.get(Vault.nonSmartObjects.size() - 1).getVertices()) {
                             Vertex newVertex = new Vertex(v.getStartX(), v.getStartY(), v.getEndX(), v.getEndY(), v.getVertexMeasurementMeasurement(), v.getGroup());
                             newVertex.setHash(hash);
-                            nonSmartObjects.get(nonSmartObjects.size() - 1).getVertices().set(i, newVertex);
+                            Vault.nonSmartObjects.get(Vault.nonSmartObjects.size() - 1).getVertices().set(i, newVertex);
                             i++;
                             drawingPane.getChildren().add(newVertex);
                             newVertex.setStrokeWidth(5);
@@ -312,19 +305,19 @@ public class DrawingController {
                                                 Vertex currentSelected = (Vertex) mouseEvent.getSource();
                                                 if (mouseEvent.isControlDown()) {
                                                     if (currentSelected.getStroke() == Color.RED) {
-                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                        for (NonSmartObject nso : Vault.nonSmartObjects) {
                                                             for (Vertex v : nso.getVertices()) {
                                                                 if (currentSelected.getHash().equals(v.getHash())) {
-                                                                    v.setStroke(selectedElements.get(v));
-                                                                    selectedElements.remove(v);
+                                                                    v.setStroke(Vault.selectedElements.get(v));
+                                                                    Vault.selectedElements.remove(v);
                                                                 }
                                                             }
                                                         }
                                                     } else {
-                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                        for (NonSmartObject nso : Vault.nonSmartObjects) {
                                                             for (Vertex v : nso.getVertices()) {
                                                                 if (currentSelected.getHash().equals(v.getHash())) {
-                                                                    selectedElements.put(v, v.getStroke());
+                                                                    Vault.selectedElements.put(v, v.getStroke());
                                                                     v.setStroke(Color.RED);
                                                                 }
                                                             }
@@ -332,21 +325,21 @@ public class DrawingController {
                                                     }
                                                 } else {
                                                     if (currentSelected.getStroke() == Color.RED) {
-                                                        for (Shape s : selectedElements.keySet()) {
-                                                            s.setStroke(selectedElements.get(s));
+                                                        for (Shape s : Vault.selectedElements.keySet()) {
+                                                            s.setStroke(Vault.selectedElements.get(s));
                                                         }
-                                                        selectedElements.clear();
+                                                        Vault.selectedElements.clear();
                                                     } else {
-                                                        for (Shape s : selectedElements.keySet()) {
-                                                            s.setStroke(selectedElements.get(s));
+                                                        for (Shape s : Vault.selectedElements.keySet()) {
+                                                            s.setStroke(Vault.selectedElements.get(s));
                                                         }
-                                                        selectedElements.clear();
-                                                        for (NonSmartObject nso : nonSmartObjects) {
+                                                        Vault.selectedElements.clear();
+                                                        for (NonSmartObject nso : Vault.nonSmartObjects) {
                                                             for (Vertex v : nso.getVertices()) {
                                                                 System.out.println(v.getHash());
                                                                 if (currentSelected.getHash().equals(v.getHash())) {
                                                                     System.out.println(v.getHash());
-                                                                    selectedElements.put(v, v.getStroke());
+                                                                    Vault.selectedElements.put(v, v.getStroke());
                                                                     v.setStroke(Color.RED);
                                                                 }
                                                             }
@@ -374,14 +367,14 @@ public class DrawingController {
 
 
     public static void redrawMeasurements() {
-        for (int i = 0; i < walls.size(); i++) {
-            walls.get(i).getWallMeasurement().updateMeasurement();
+        for (int i = 0; i < Vault.walls.size(); i++) {
+            Vault.walls.get(i).getWallMeasurement().updateMeasurement();
         }
-        for (int i = 0; i < doors.size(); i++) {
-            doors.get(i).getDoorMeasurement().updateMeasurement();
+        for (int i = 0; i < Vault.doors.size(); i++) {
+            Vault.doors.get(i).getDoorMeasurement().updateMeasurement();
         }
-        for (int i = 0; i < windows.size(); i++) {
-            windows.get(i).getWindowMeasurement().updateMeasurement();
+        for (int i = 0; i < Vault.windows.size(); i++) {
+            Vault.windows.get(i).getWindowMeasurement().updateMeasurement();
         }
     }
 

@@ -170,7 +170,7 @@ public class ToolboxView {
         doorButton.setStyle(null);
         windowButton.setStyle(null);
         nonSmartButton.setStyle(null);
-        smartButton.setStyle(null);
+//        smartButton.setStyle(null);
         sensorButton.setStyle(null);
     }
 
