@@ -10,6 +10,8 @@ public class GenericView {
 
     public static GenericView genericView = new GenericView();
     public static BorderPane genericPane = new BorderPane();
+    public static ToolboxView toolboxView;
+    public static GridPane rightPane;
     final static Scene theScene = new Scene(genericPane, 1280, 720);
 
     private GenericView() {
@@ -28,11 +30,11 @@ public class GenericView {
         DrawingView.setup(theScene);
         genericPane.setCenter(DrawingView.drawingScrollPane);
 
-        ToolboxView toolboxView = new ToolboxView(theScene);
+        toolboxView = new ToolboxView(theScene);
         toolboxView.setup();
         genericPane.setLeft(toolboxView.getToolBoxPane());
 
-        GridPane rightPane = new GridPane();
+        rightPane = new GridPane();
 
         ElementNavigatorView elementNavigatorView = new ElementNavigatorView(theScene);
         elementNavigatorView.setup();

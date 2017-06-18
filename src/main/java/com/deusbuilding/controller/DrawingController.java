@@ -6,6 +6,7 @@ import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.DrawingView;
 import com.deusbuilding.view.ToolboxView;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -373,6 +374,27 @@ public class DrawingController {
             public void handle(MouseEvent mouseEvent) {
                 if (ToolboxView.selectedTool.equals("sensor")) {
                     if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        if(Vault.sensorTypeToBePlaced.equals("circular")) {
+                            Vault.circularSensorToBePlaced.setCenterX(mouseEvent.getX());
+                            Vault.circularSensorToBePlaced.setCenterY(mouseEvent.getY());
+                            drawingPane.getChildren().add(Vault.circularSensorToBePlaced);
+                            Vault.circularSensors.add(Vault.circularSensorToBePlaced);
+                            resetOtherButtons();
+                            ToolboxView.selectedTool = "select";
+                            DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
+                            selectButton.setStyle("-fx-background-color: lightcoral");
+
+                        }
+                        if(Vault.sensorTypeToBePlaced.equals("directional")) {
+                            Vault.directionalSensorToBePlaced.setCenterX(mouseEvent.getX());
+                            Vault.directionalSensorToBePlaced.setCenterY(mouseEvent.getY());
+                            drawingPane.getChildren().add(Vault.directionalSensorToBePlaced);
+                            Vault.directionalSensors.add(Vault.directionalSensorToBePlaced);
+                            resetOtherButtons();
+                            ToolboxView.selectedTool = "select";
+                            DrawingView.drawingPane.setCursor(Cursor.DEFAULT);
+                            selectButton.setStyle("-fx-background-color: lightcoral");
+                        }
                         System.out.println("EMENDEMS!!!");
                     }
                 }
@@ -389,6 +411,14 @@ public class DrawingController {
         }
         for (int i = 0; i < Vault.windows.size(); i++) {
             Vault.windows.get(i).getWindowMeasurement().updateMeasurement();
+        }
+    }
+
+    private static class CircularSensorModifyEventHandler implements EventHandler {
+
+        @Override
+        public void handle(Event event) {
+
         }
     }
 
