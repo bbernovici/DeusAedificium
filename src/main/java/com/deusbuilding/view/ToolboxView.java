@@ -1,6 +1,7 @@
 package com.deusbuilding.view;
 
 import com.deusbuilding.window.NonSmartObjectsWindow;
+import com.deusbuilding.window.SensorWindow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -159,6 +160,16 @@ public class ToolboxView {
         sensorButton.setTooltip(sensorTooltip);
         toolBoxPane.setConstraints(sensorButton, 1, 4 );
         toolBoxPane.getChildren().addAll(sensorButton);
+        sensorButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                resetOtherButtons();
+                ToolboxView.selectedTool = "sensor";
+                DrawingView.drawingPane.setCursor(Cursor.HAND);
+                sensorButton.setStyle("-fx-background-color: lightcoral");
+                SensorWindow sensorWindow = new SensorWindow();
+            }
+        });
 
     }
 

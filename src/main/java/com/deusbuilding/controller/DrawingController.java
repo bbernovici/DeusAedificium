@@ -37,6 +37,7 @@ public class DrawingController {
         createDoorDrawingEvent(scene);
         createWindowDrawingEvent(scene);
         createNonSmartObjectDrawingEvent(scene);
+        createSensorDrawingEvent(scene);
         createMoveEvent();
     }
 
@@ -365,6 +366,19 @@ public class DrawingController {
         });
     }
 
+    public static void createSensorDrawingEvent(final Scene scene) {
+        final Pane drawingPane = DrawingView.drawingPane;
+        DrawingView.drawingPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (ToolboxView.selectedTool.equals("sensor")) {
+                    if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                        System.out.println("EMENDEMS!!!");
+                    }
+                }
+            }
+        });
+    }
 
     public static void redrawMeasurements() {
         for (int i = 0; i < Vault.walls.size(); i++) {
