@@ -29,5 +29,6 @@ public class Vault {
     public static ObservableList obsNonSmartobjectsList = FXCollections.observableArrayList();
     public static HashMap mapNonSmartObjects = new HashMap<String, NonSmartObject>();
 
+    public static ArrayList<StochasticAgent> stochasticAgents = new ArrayList<>();
 
 }
