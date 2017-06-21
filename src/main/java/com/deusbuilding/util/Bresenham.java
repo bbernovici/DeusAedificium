@@ -35,6 +35,10 @@ public class Bresenham {
         int numerator = longest >> 1 ;
         for (int i=0;i<=longest;i++) {
             schemaMatrix[x][y] = type;
+            schemaMatrix[x+1][y] = type;
+            schemaMatrix[x-1][y] = type;
+            schemaMatrix[x][y+1] = type;
+            schemaMatrix[x][y-1] = type;
             numerator += shortest ;
             if (!(numerator<longest)) {
                 numerator -= longest ;

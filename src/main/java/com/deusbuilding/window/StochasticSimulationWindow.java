@@ -249,11 +249,9 @@ public class StochasticSimulationWindow {
                 AStarNode currentNode = new AStarNode();
                 currentNode.x = j;
                 currentNode.y = i;
-                if(schemaMatrix[j][i] == 0){
-                    currentNode.cost = 1;
-                } else if (schemaMatrix[j][i] == 1) {
-                    currentNode.cost = 9999;
-                }
+                currentNode.type = schemaMatrix[j][i];
+                currentNode.cost = 1;
+
                 //left
                 AStarNode leftNeighbor = new AStarNode();
                 leftNeighbor.x = j-1;
@@ -285,7 +283,8 @@ public class StochasticSimulationWindow {
         }
 
         AStar aStar = new AStar();
-        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(200).get(200), aStarNodes);
+        System.out.println(aStarNodes.size());
+        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(30).get(30), aStarNodes);
         for(int i = 0; i<path.size()-1;i++) {
             Line line = new Line();
             line.setStyle("-fx-stroke: red;");
@@ -293,15 +292,16 @@ public class StochasticSimulationWindow {
             line.setStartY(path.get(i).y);
             line.setEndX(path.get(i+1).x);
             line.setEndY(path.get(i+1).y);
+            aStarNodes.get(path.get(i).y).get(path.get(i).x).type = 5;
             drawingStochasticPane.getChildren().add(line);
         }
 
-//        for(int i = 0; i < 500; i++) {
-//            for (int j = 0; j < 500; j++) {
-//                System.out.print(aStarNodes.get(i).get(j).type);
-//            }
-//            System.out.println();
-//        }
+        for(int i = 0; i < 500; i++) {
+            for (int j = 0; j < 500; j++) {
+                System.out.print(aStarNodes.get(i).get(j).type);
+            }
+            System.out.println();
+        }
         genericStochasticView.setCenter(drawingStochasticScrollPane);
         genericStochasticView.setRight(rightStochasticView);
 

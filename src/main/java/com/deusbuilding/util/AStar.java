@@ -37,12 +37,20 @@ public class AStar {
             closed.add(current);
 
             for (AStarNode neighborPos : current.neighbors) {
-                // IF our neighbor is null or it is a wall (1) or it is a window(2) or it is a special object (>3) || neighbor.type == 1 || neighbor.type == 2 || neighbor.type > 3
+                // IF our neighbor is null or it is a wall (1) or it is a window(2) or it is a special object (>3) !(neighbor.type == 1 || neighbor.type == 2 || neighbor.type > 3)
+                if(neighborPos.x >= 999 || neighborPos.y >= 999) {
+                    continue;
+                }
                 AStarNode neighbor = aStarNodes.get(neighborPos.x).get(neighborPos.y);
+                neighbor.parent = neighborPos.parent;
+                neighbor.g = neighborPos.g;
+                neighbor.h = neighborPos.h;
+                neighbor.f = neighborPos.f;
+                neighbor.cost = neighborPos.cost;
                 if(neighbor.type == 1) {
                     System.out.println("da");
                 }
-                if (neighbor == null  ) {
+                if (neighbor == null) {
                     continue;
                 }
 
@@ -54,11 +62,13 @@ public class AStar {
                 }
 
                 if (!open.contains(neighbor) && !closed.contains(neighbor)) {
-                    neighbor.g = nextG;
-                    neighbor.h = estimateDistance(neighbor, goal);
-                    neighbor.f = neighbor.g + neighbor.h;
-                    neighbor.parent = current;
-                    open.add(neighbor);
+                    if(neighbor.type != 1) {
+                        neighbor.g = nextG;
+                        neighbor.h = estimateDistance(neighbor, goal);
+                        neighbor.f = neighbor.g + neighbor.h;
+                        neighbor.parent = current;
+                        open.add(neighbor);
+                    }
                 }
             }
         }
