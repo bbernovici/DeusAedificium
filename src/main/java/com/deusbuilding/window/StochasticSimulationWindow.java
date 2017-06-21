@@ -1,6 +1,9 @@
 package com.deusbuilding.window;
 
 import com.deusbuilding.model.*;
+import com.deusbuilding.util.AStar;
+import com.deusbuilding.util.AStarNode;
+import com.deusbuilding.util.Bresenham;
 import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.GenericView;
 import javafx.beans.value.ChangeListener;
@@ -137,6 +140,7 @@ public class StochasticSimulationWindow {
         ArrayList<Wall> walls = (ArrayList) Vault.walls.clone();
         ArrayList<Door> doors = (ArrayList) Vault.doors.clone();
         ArrayList<Window> windows = (ArrayList) Vault.windows.clone();
+        ArrayList<ArrayList<AStarNode>> aStarNodes = new ArrayList<>();
 
         //add walls/windows/doors
         for (int i = 0; i < walls.size(); i++) {
@@ -145,7 +149,7 @@ public class StochasticSimulationWindow {
             line.setStartY(walls.get(i).getLine().getStartY());
             line.setEndX(walls.get(i).getLine().getEndX());
             line.setEndY(walls.get(i).getLine().getEndY());
-            putLineIntoMatrix(line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 1);
+            Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 1);
             line.setStrokeWidth(walls.get(i).getLine().getStrokeWidth());
             line.setStroke(walls.get(i).getLine().getStroke());
             drawingStochasticPane.getChildren().add(line);
@@ -161,20 +165,13 @@ public class StochasticSimulationWindow {
             }
         }
 
-        for(int i = 0; i < 500; i++) {
-            for(int j = 0; j < 500; j++) {
-                System.out.print(schemaMatrix[i][j]);
-            }
-            System.out.println();
-        }
-
         for (int i = 0; i < doors.size(); i++) {
             Line line = new Line();
             line.setStartX(doors.get(i).getLine().getStartX());
             line.setStartY(doors.get(i).getLine().getStartY());
             line.setEndX(doors.get(i).getLine().getEndX());
             line.setEndY(doors.get(i).getLine().getEndY());
-            putLineIntoMatrix(line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 3);
+            Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 3);
             line.setStrokeWidth(doors.get(i).getLine().getStrokeWidth());
             line.setStroke(doors.get(i).getLine().getStroke());
             drawingStochasticPane.getChildren().add(line);
@@ -196,7 +193,7 @@ public class StochasticSimulationWindow {
             line.setStartY(windows.get(i).getLine().getStartY());
             line.setEndX(windows.get(i).getLine().getEndX());
             line.setEndY(windows.get(i).getLine().getEndY());
-            putLineIntoMatrix(line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 2);
+            Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), 2);
             line.setStrokeWidth(windows.get(i).getLine().getStrokeWidth());
             line.setStroke(windows.get(i).getLine().getStroke());
             drawingStochasticPane.getChildren().add(line);
@@ -212,6 +209,7 @@ public class StochasticSimulationWindow {
             }
         }
 
+
         //add non-smart objects
         ArrayList<NonSmartObject> nonSmartObjects = (ArrayList<NonSmartObject>) Vault.nonSmartObjects.clone();
         for (int i = 0; i < nonSmartObjects.size(); i++) {
@@ -221,7 +219,7 @@ public class StochasticSimulationWindow {
                 line.setStartY(nonSmartObjects.get(i).getVertices().get(j).getStartY());
                 line.setEndX(nonSmartObjects.get(i).getVertices().get(j).getEndX());
                 line.setEndY(nonSmartObjects.get(i).getVertices().get(j).getEndY());
-                putLineIntoMatrix(line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), i+10);
+                Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), i+10);
                 line.setStrokeWidth(nonSmartObjects.get(i).getVertices().get(j).getStrokeWidth());
                 line.setStroke(nonSmartObjects.get(i).getVertices().get(j).getStroke());
                 drawingStochasticPane.getChildren().add(line);
@@ -238,6 +236,72 @@ public class StochasticSimulationWindow {
             }
         }
 
+//        for(int i = 0; i < 500; i++) {
+//            for(int j = 0; j < 500; j++) {
+//                System.out.print(schemaMatrix[j][i]);
+//            }
+//            System.out.println();
+//        }
+
+        for(int i = 1; i < 1000; i++) {
+            ArrayList<AStarNode> iArray = new ArrayList<>();
+            for(int j = 1; j < 1000; j++) {
+                AStarNode currentNode = new AStarNode();
+                currentNode.x = j;
+                currentNode.y = i;
+                if(schemaMatrix[j][i] == 0){
+                    currentNode.cost = 1;
+                } else if (schemaMatrix[j][i] == 1) {
+                    currentNode.cost = 9999;
+                }
+                //left
+                AStarNode leftNeighbor = new AStarNode();
+                leftNeighbor.x = j-1;
+                leftNeighbor.y = i;
+                leftNeighbor.type = schemaMatrix[j-1][i];
+                //right
+                AStarNode rightNeighbor = new AStarNode();
+                rightNeighbor.x = j+1;
+                rightNeighbor.y = i;
+                rightNeighbor.type = schemaMatrix[j+1][i];
+                //top
+                AStarNode topNeighbor = new AStarNode();
+                topNeighbor.x = j;
+                topNeighbor.y = i+1;
+                topNeighbor.type = schemaMatrix[j][i+1];
+                //bottom
+                AStarNode bottomNeighbor = new AStarNode();
+                bottomNeighbor.x = j;
+                bottomNeighbor.y = i-1;
+                bottomNeighbor.type = schemaMatrix[j][i-1];
+
+                currentNode.neighbors.add(bottomNeighbor);
+                currentNode.neighbors.add(topNeighbor);
+                currentNode.neighbors.add(leftNeighbor);
+                currentNode.neighbors.add(rightNeighbor);
+                iArray.add(currentNode);
+            }
+            aStarNodes.add(iArray);
+        }
+
+        AStar aStar = new AStar();
+        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(200).get(200), aStarNodes);
+        for(int i = 0; i<path.size()-1;i++) {
+            Line line = new Line();
+            line.setStyle("-fx-stroke: red;");
+            line.setStartX(path.get(i).x);
+            line.setStartY(path.get(i).y);
+            line.setEndX(path.get(i+1).x);
+            line.setEndY(path.get(i+1).y);
+            drawingStochasticPane.getChildren().add(line);
+        }
+
+//        for(int i = 0; i < 500; i++) {
+//            for (int j = 0; j < 500; j++) {
+//                System.out.print(aStarNodes.get(i).get(j).type);
+//            }
+//            System.out.println();
+//        }
         genericStochasticView.setCenter(drawingStochasticScrollPane);
         genericStochasticView.setRight(rightStochasticView);
 
@@ -249,36 +313,38 @@ public class StochasticSimulationWindow {
         stage.show();
     }
 
-    public void putLineIntoMatrix(double startX, double endX, double startY, double endY, int type) {
-        int x1, x2, y1, y2, y;
-        if(startX <= endX) {
-            x1 = (int) startX;
-            x2 = (int) endX;
-        } else {
-            x1 = (int) endX;
-            x2 = (int) startX;
-        }
-        if(startY <= endY) {
-            y1 = (int) startY;
-            y2 = (int) endY;
-        } else {
-            y1 = (int) endY;
-            y2 = (int) startY;
-        }
+//    public void putLineIntoMatrix(double startX, double endX, double startY, double endY, int type) {
+//        int x1, x2, y1, y2, y;
+//        if(startX <= endX) {
+//            x1 = (int) startX;
+//            x2 = (int) endX;
+//        } else {
+//            x1 = (int) endX;
+//            x2 = (int) startX;
+//        }
+//        if(startY <= endY) {
+//            y1 = (int) startY;
+//            y2 = (int) endY;
+//        } else {
+//            y1 = (int) endY;
+//            y2 = (int) startY;
+//        }
+//
+//        int dx = x2-x1;
+//        int dy = y2-y1;
+//        int D = 2*dy - dx;
+//        y = y1;
+//        for (int x = x1; x <= x2; x++) {
+//            schemaMatrix[x][y] = type;
+//            if(D>0) {
+//                y = y+1;
+//                D = D - 2*dx;
+//            }
+//            D = D + 2*dy;
+//        }
+//    }
 
-        int dx = x2-x1;
-        int dy = y2-y1;
-        int D = 2*dy - dx;
-        y = y1;
-        for (int x = x1; x <= x2; x++) {
-            schemaMatrix[x][y] = type;
-            if(D>0) {
-                y = y+1;
-                D = D - 2*dx;
-            }
-            D = D + 2*dy;
-        }
-    }
+
 
     public static void createDrawingEvent(final Scene scene) {
         drawingStochasticPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
