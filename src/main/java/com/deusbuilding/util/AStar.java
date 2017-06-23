@@ -38,10 +38,10 @@ public class AStar {
 
             for (AStarNode neighborPos : current.neighbors) {
                 // IF our neighbor is null or it is a wall (1) or it is a window(2) or it is a special object (>3) !(neighbor.type == 1 || neighbor.type == 2 || neighbor.type > 3)
-                if(neighborPos.x >= 999 || neighborPos.y >= 999) {
+                if(neighborPos.x > 975 || neighborPos.y > 975) {
                     continue;
                 }
-                AStarNode neighbor = aStarNodes.get(neighborPos.x).get(neighborPos.y);
+                AStarNode neighbor = aStarNodes.get(neighborPos.x/25).get(neighborPos.y/25);
                 neighbor.parent = neighborPos.parent;
                 neighbor.g = neighborPos.g;
                 neighbor.h = neighborPos.h;
@@ -86,5 +86,6 @@ public class AStar {
 
     public int estimateDistance(AStarNode node1, AStarNode node2) {
         return Math.abs(node1.x - node2.x) + Math.abs(node1.y - node2.y);
+//        return (int) (Math.sqrt(Math.pow(node2.x - node1.x, 2.0) + Math.pow(node2.y - node1.y, 2.0)));
     }
 }

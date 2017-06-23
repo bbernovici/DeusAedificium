@@ -219,7 +219,7 @@ public class StochasticSimulationWindow {
                 line.setStartY(nonSmartObjects.get(i).getVertices().get(j).getStartY());
                 line.setEndX(nonSmartObjects.get(i).getVertices().get(j).getEndX());
                 line.setEndY(nonSmartObjects.get(i).getVertices().get(j).getEndY());
-                Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), i+10);
+                Bresenham.putLineIntoMatrix(schemaMatrix, line.getStartX(), line.getEndX(), line.getStartY(), line.getEndY(), i + 10);
                 line.setStrokeWidth(nonSmartObjects.get(i).getVertices().get(j).getStrokeWidth());
                 line.setStroke(nonSmartObjects.get(i).getVertices().get(j).getStroke());
                 drawingStochasticPane.getChildren().add(line);
@@ -241,42 +241,77 @@ public class StochasticSimulationWindow {
 //                System.out.print(schemaMatrix[j][i]);
 //            }
 //            System.out.println();
-//        }
+//
 
-        for(int i = 1; i < 1000; i++) {
+        for (int i = 25; i < 1000; i = i + 25) {
             ArrayList<AStarNode> iArray = new ArrayList<>();
-            for(int j = 1; j < 1000; j++) {
+            for (int j = 25; j < 1000; j = j + 25) {
                 AStarNode currentNode = new AStarNode();
                 currentNode.x = j;
                 currentNode.y = i;
                 currentNode.type = schemaMatrix[j][i];
+                outerloop:
+                for (int k = i; k < i + 25; k++) {
+                    for (int l = j; l < j + 25; l++) {
+                        if (schemaMatrix[l][k] != 0) {
+                            currentNode.type = schemaMatrix[l][k];
+                            currentNode.cost = 25;
+                            break outerloop;
+                        }
+                    }
+                }
                 currentNode.cost = 1;
 
                 //left
                 AStarNode leftNeighbor = new AStarNode();
-                leftNeighbor.x = j-1;
+                leftNeighbor.x = j - 25;
                 leftNeighbor.y = i;
-                leftNeighbor.type = schemaMatrix[j-1][i];
+                leftNeighbor.type = schemaMatrix[j - 25][i];
                 //right
                 AStarNode rightNeighbor = new AStarNode();
-                rightNeighbor.x = j+1;
+                rightNeighbor.x = j + 25;
                 rightNeighbor.y = i;
-                rightNeighbor.type = schemaMatrix[j+1][i];
+                rightNeighbor.type = schemaMatrix[j + 25][i];
                 //top
                 AStarNode topNeighbor = new AStarNode();
                 topNeighbor.x = j;
-                topNeighbor.y = i+1;
-                topNeighbor.type = schemaMatrix[j][i+1];
+                topNeighbor.y = i + 25;
+                topNeighbor.type = schemaMatrix[j][i + 25];
                 //bottom
                 AStarNode bottomNeighbor = new AStarNode();
                 bottomNeighbor.x = j;
-                bottomNeighbor.y = i-1;
-                bottomNeighbor.type = schemaMatrix[j][i-1];
+                bottomNeighbor.y = i - 25;
+                bottomNeighbor.type = schemaMatrix[j][i - 25];
+                //corner left
+                AStarNode cornerLeft = new AStarNode();
+                cornerLeft.x = j - 25;
+                cornerLeft.y = i - 25;
+                cornerLeft.type = schemaMatrix[j-25][i - 25];
+                //corner right
+                AStarNode cornerRight = new AStarNode();
+                cornerRight.x = j + 25;
+                cornerRight.y = i - 25;
+                cornerRight.type = schemaMatrix[j+25][i - 25];
+                //corner left
+                AStarNode cornerLeft2 = new AStarNode();
+                cornerLeft2.x = j - 25;
+                cornerLeft2.y = i + 25;
+                cornerLeft2.type = schemaMatrix[j-25][i + 25];
+                //corner left
+                AStarNode cornerRight2 = new AStarNode();
+                cornerRight2.x = j + 25;
+                cornerRight2.y = i + 25;
+                cornerRight2.type = schemaMatrix[j+25][i + 25];
 
                 currentNode.neighbors.add(bottomNeighbor);
                 currentNode.neighbors.add(topNeighbor);
                 currentNode.neighbors.add(leftNeighbor);
                 currentNode.neighbors.add(rightNeighbor);
+                currentNode.neighbors.add(cornerLeft);
+                currentNode.neighbors.add(cornerRight);
+                currentNode.neighbors.add(cornerLeft2);
+                currentNode.neighbors.add(cornerRight2);
+
                 iArray.add(currentNode);
             }
             aStarNodes.add(iArray);
@@ -284,21 +319,22 @@ public class StochasticSimulationWindow {
 
         AStar aStar = new AStar();
         System.out.println(aStarNodes.size());
-        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(30).get(30), aStarNodes);
-        for(int i = 0; i<path.size()-1;i++) {
+        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(8).get(2), aStarNodes.get(6).get(2), aStarNodes);
+        System.out.println("size: " + path.size());
+        for (int i = 0; i < path.size() - 1; i++) {
             Line line = new Line();
             line.setStyle("-fx-stroke: red;");
             line.setStartX(path.get(i).x);
             line.setStartY(path.get(i).y);
-            line.setEndX(path.get(i+1).x);
-            line.setEndY(path.get(i+1).y);
-            aStarNodes.get(path.get(i).y).get(path.get(i).x).type = 5;
+            line.setEndX(path.get(i + 1).x);
+            line.setEndY(path.get(i + 1).y);
+            aStarNodes.get(path.get(i).y / 25).get(path.get(i).x / 25).type = 5;
             drawingStochasticPane.getChildren().add(line);
         }
 
-        for(int i = 0; i < 500; i++) {
-            for (int j = 0; j < 500; j++) {
-                System.out.print(aStarNodes.get(i).get(j).type);
+        for (int i = 0; i < 500; i = i + 25) {
+            for (int j = 0; j < 500; j = j + 25) {
+                System.out.print(aStarNodes.get(i / 25).get(j / 25).type);
             }
             System.out.println();
         }
@@ -343,7 +379,6 @@ public class StochasticSimulationWindow {
 //            D = D + 2*dy;
 //        }
 //    }
-
 
 
     public static void createDrawingEvent(final Scene scene) {
