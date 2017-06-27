@@ -27,7 +27,7 @@ public class Node implements AStarNode {
 
     public double distance(Point target) {
         Point current = new Point(getPosX(), getPosY());
-        return current.distance(target);
+        return Math.abs(current.getX() - target.getX()) + Math.abs(current.getY() - target.getY());
     }
 
     @Override

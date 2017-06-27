@@ -247,7 +247,7 @@ public class StochasticSimulationWindow {
         for (int i = 0; i < 500; i++) {
             ArrayList<Node> columns = new ArrayList<>();
             for (int j = 0; j < 500; j++) {
-                Node node = new Node(i,j, schemaMatrix[j][i]);
+                Node node = new Node(i,j, schemaMatrix[i][j]);
                 columns.add(node);
             }
             nodes.add(columns);
