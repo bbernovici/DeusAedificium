@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -244,21 +245,43 @@ public class StochasticSimulationWindow {
             }
         }
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1000; i = i + 10) {
             ArrayList<Node> columns = new ArrayList<>();
-            for (int j = 0; j < 500; j++) {
-                Node node = new Node(i,j, schemaMatrix[i][j]);
+            for (int j = 0; j < 1000; j = j + 10) {
+                int status = 0;
+                for(int k = i; k < i + 10; k++) {
+                    for (int l = j; l < j + 10; l++) {
+                        if(schemaMatrix[k][l] == 1) {
+                            status = 1;
+                        }
+                    }
+                }
+                Node node = new Node(i,j, status);
+                Text t = new Text(i, j, String.valueOf(status));
+                drawingStochasticPane.getChildren().add(t);
                 columns.add(node);
             }
             nodes.add(columns);
         }
         createGraphFromMatrix(nodes);
 
-        Deque<Node> deques = AStarImpl.getRoute(nodes.get(5).get(5), nodes.get(100).get(100));
+        Deque<Node> deques = AStarImpl.getRoute(nodes.get(5).get(5), nodes.get(66).get(66));
         System.out.println(deques.size());
         while (deques.size() != 0) {
             Node curNode = deques.pop();
             Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
+            t.setFill(Color.RED);
+            t.setFont(Font.font("System", 30));
+            schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
+            drawingStochasticPane.getChildren().add(t);
+        }
+
+        Deque<Node> deques2 = AStarImpl.getRoute(nodes.get(44).get(99), nodes.get(5).get(55));
+        System.out.println(deques2.size());
+        while (deques2.size() != 0) {
+            Node curNode = deques2.pop();
+            Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
+            t.setFill(Color.RED);
             schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
             drawingStochasticPane.getChildren().add(t);
         }
@@ -315,8 +338,8 @@ public class StochasticSimulationWindow {
 
     public void createGraphFromMatrix(ArrayList<ArrayList<Node>> nodes) {
 
-        for(int i = 1; i < 499; i++) {
-            for(int j = 1; j < 499; j++) {
+        for(int i = 1; i < 99; i++) {
+            for(int j = 1; j < 99; j++) {
                 if(nodes.get(i).get(j).getType() != 1) {
                     if(nodes.get(i-1).get(j).getType() != 1) {
                         nodes.get(i).get(j).addNeighbor(nodes.get(i - 1).get(j));
