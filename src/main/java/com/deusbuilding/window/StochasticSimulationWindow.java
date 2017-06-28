@@ -276,12 +276,13 @@ public class StochasticSimulationWindow {
             drawingStochasticPane.getChildren().add(t);
         }
 
-        Deque<Node> deques2 = AStarImpl.getRoute(nodes.get(44).get(99), nodes.get(5).get(55));
+        Deque<Node> deques2 = AStarImpl.getRoute(nodes.get(50).get(98), nodes.get(5).get(98));
         System.out.println(deques2.size());
         while (deques2.size() != 0) {
             Node curNode = deques2.pop();
             Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
             t.setFill(Color.RED);
+            t.setFont(Font.font("System", 30));
             schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
             drawingStochasticPane.getChildren().add(t);
         }
