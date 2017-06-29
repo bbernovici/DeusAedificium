@@ -36,10 +36,10 @@ public class StochasticSimulationWindow {
     static ScrollPane drawingStochasticScrollPane;
     static ListView<String> agentsList = new ListView<>();
     public static String status = "idle";
-    final static Slider hungerSlider = new Slider(0, 10, 5);
-    final static Slider energySlider = new Slider(0, 10, 5);
-    final static Slider hygieneSlider = new Slider(0, 10, 5);
-    final static Slider bladderSlider = new Slider(0, 10, 5);
+    final static Slider hungerSlider = new Slider(0, 2, 1);
+    final static Slider energySlider = new Slider(0, 2, 1);
+    final static Slider hygieneSlider = new Slider(0, 2, 1);
+    final static Slider bladderSlider = new Slider(0, 2, 1);
     final static Button placeAgentButton = new Button("Place Agent");
     public int[][] schemaMatrix = new int[2000][2000];
     public int[][] scannedNodes = new int[2000][2000];
@@ -118,6 +118,19 @@ public class StochasticSimulationWindow {
         removeAgentButton.setMaxWidth(Double.MAX_VALUE);
         removeAgentButton.setPrefWidth(200);
         removeAgentButton.setPrefHeight(50);
+        Button runSimulationButton = new Button("Run Simulation");
+        runSimulationButton.setMaxWidth(Double.MAX_VALUE);
+        runSimulationButton.setPrefWidth(200);
+        runSimulationButton.setPrefHeight(50);
+        runSimulationButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                for(StochasticAgent stochasticAgent : Vault.stochasticAgents) {
+                    stochasticAgent.startAgent(nodes, stochasticAgent);
+                }
+            }
+        });
+
 
 
         rightStochasticView.getChildren().addAll(hungerLabel,
@@ -130,7 +143,8 @@ public class StochasticSimulationWindow {
                 bladderSlider,
                 placeAgentButton,
                 modifyAgentButton,
-                removeAgentButton);
+                removeAgentButton,
+                runSimulationButton);
 
 
         //zero out the matrix
@@ -251,8 +265,11 @@ public class StochasticSimulationWindow {
                 int status = 0;
                 for(int k = i; k < i + 10; k++) {
                     for (int l = j; l < j + 10; l++) {
-                        if(schemaMatrix[k][l] == 1) {
+                        if(schemaMatrix[k][l] != 0 && schemaMatrix[k][l] != 3) {
                             status = 1;
+                        }
+                        if(schemaMatrix[k][l] >= 10) {
+                            status = schemaMatrix[k][l];
                         }
                     }
                 }
@@ -341,17 +358,17 @@ public class StochasticSimulationWindow {
 
         for(int i = 1; i < 99; i++) {
             for(int j = 1; j < 99; j++) {
-                if(nodes.get(i).get(j).getType() != 1) {
-                    if(nodes.get(i-1).get(j).getType() != 1) {
+                if(nodes.get(i).get(j).getType() == 0 || nodes.get(i).get(j).getType() == 3 || nodes.get(i).get(j).getType() >= 10) {
+                    if(nodes.get(i-1).get(j).getType() == 0 || nodes.get(i-1).get(j).getType() == 3 || nodes.get(i-1).get(j).getType() >= 10) {
                         nodes.get(i).get(j).addNeighbor(nodes.get(i - 1).get(j));
                     }
-                    if(nodes.get(i+1).get(j).getType() != 1) {
+                    if(nodes.get(i+1).get(j).getType() == 0 || nodes.get(i+1).get(j).getType() == 3 || nodes.get(i+1).get(j).getType() >= 10) {
                         nodes.get(i).get(j).addNeighbor(nodes.get(i + 1).get(j));
                     }
-                    if(nodes.get(i).get(j-1).getType() != 1) {
+                    if(nodes.get(i).get(j-1).getType() == 0 || nodes.get(i).get(j-1).getType() == 3 || nodes.get(i).get(j-1).getType() >= 10) {
                         nodes.get(i).get(j).addNeighbor(nodes.get(i).get(j - 1));
                     }
-                    if(nodes.get(i).get(j+1).getType() != 1) {
+                    if(nodes.get(i).get(j+1).getType() == 0 || nodes.get(i).get(j+1).getType() == 3 || nodes.get(i).get(j+1).getType() >= 10) {
                         nodes.get(i).get(j).addNeighbor(nodes.get(i).get(j + 1));
                     }
                 }
@@ -366,10 +383,6 @@ public class StochasticSimulationWindow {
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getButton() == MouseButton.PRIMARY) {
                     if (status.equals("place")) {
                         StochasticAgent agent = new StochasticAgent();
-                        agent.setHunger(100);
-                        agent.setBladder(100);
-                        agent.setEnergy(100);
-                        agent.setHygiene(100);
                         agent.setBladderDecay((int) bladderSlider.getValue());
                         agent.setEnergyDecay((int) energySlider.getValue());
                         agent.setHungerDecay((int) hungerSlider.getValue());
@@ -386,4 +399,9 @@ public class StochasticSimulationWindow {
             }
         });
     }
+
+//    public static void updateAgent(StochasticAgent agent, Integer x, Integer y) {
+//        agent.setCenterX(x);
+//        agent.setCenterY(y);
+//    }
 }
