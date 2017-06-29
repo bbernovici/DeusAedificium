@@ -36,10 +36,10 @@ public class StochasticSimulationWindow {
     static ScrollPane drawingStochasticScrollPane;
     static ListView<String> agentsList = new ListView<>();
     public static String status = "idle";
-    final static Slider hungerSlider = new Slider(0, 2, 1);
-    final static Slider energySlider = new Slider(0, 2, 1);
-    final static Slider hygieneSlider = new Slider(0, 2, 1);
-    final static Slider bladderSlider = new Slider(0, 2, 1);
+    final static Slider hungerSlider = new Slider(0, 4, 2);
+    final static Slider energySlider = new Slider(0, 4, 2);
+    final static Slider hygieneSlider = new Slider(0, 4, 2);
+    final static Slider bladderSlider = new Slider(0, 4, 2);
     final static Button placeAgentButton = new Button("Place Agent");
     public int[][] schemaMatrix = new int[2000][2000];
     public int[][] scannedNodes = new int[2000][2000];
@@ -282,27 +282,27 @@ public class StochasticSimulationWindow {
         }
         createGraphFromMatrix(nodes);
 
-        Deque<Node> deques = AStarImpl.getRoute(nodes.get(5).get(5), nodes.get(66).get(66));
-        System.out.println(deques.size());
-        while (deques.size() != 0) {
-            Node curNode = deques.pop();
-            Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
-            t.setFill(Color.RED);
-            t.setFont(Font.font("System", 30));
-            schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
-            drawingStochasticPane.getChildren().add(t);
-        }
-
-        Deque<Node> deques2 = AStarImpl.getRoute(nodes.get(50).get(98), nodes.get(5).get(98));
-        System.out.println(deques2.size());
-        while (deques2.size() != 0) {
-            Node curNode = deques2.pop();
-            Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
-            t.setFill(Color.RED);
-            t.setFont(Font.font("System", 30));
-            schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
-            drawingStochasticPane.getChildren().add(t);
-        }
+//        Deque<Node> deques = AStarImpl.getRoute(nodes.get(5).get(5), nodes.get(66).get(66));
+//        System.out.println(deques.size());
+//        while (deques.size() != 0) {
+//            Node curNode = deques.pop();
+//            Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
+//            t.setFill(Color.RED);
+//            t.setFont(Font.font("System", 30));
+//            schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
+//            drawingStochasticPane.getChildren().add(t);
+//        }
+//
+//        Deque<Node> deques2 = AStarImpl.getRoute(nodes.get(50).get(98), nodes.get(5).get(98));
+//        System.out.println(deques2.size());
+//        while (deques2.size() != 0) {
+//            Node curNode = deques2.pop();
+//            Text t = new Text(curNode.getPosX(), curNode.getPosY(), ".");
+//            t.setFill(Color.RED);
+//            t.setFont(Font.font("System", 30));
+//            schemaMatrix[curNode.getPosX()][curNode.getPosY()] = 5;
+//            drawingStochasticPane.getChildren().add(t);
+//        }
 
 
         for(int i = 0; i < 500; i++) {
