@@ -4,20 +4,12 @@ public class Bresenham {
 
     public static void putLineIntoMatrix(int[][] schemaMatrix, double startX, double endX, double startY, double endY, int type) {
         int x, x2, y, y2;
-//        if(startX <= endX) {
         x = (int) startX;
         x2 = (int) endX;
-//        } else {
-//            x = (int) endX;
-//            x2 = (int) startX;
-//        }
-//        if(startY <= endY) {
+
         y = (int) startY;
         y2 = (int) endY;
-//        } else {
-//            y = (int) endY;
-//            y2 = (int) startY;
-//        }
+
         int w = x2 - x ;
         int h = y2 - y ;
         int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;

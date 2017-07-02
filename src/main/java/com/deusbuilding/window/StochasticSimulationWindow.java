@@ -114,6 +114,14 @@ public class StochasticSimulationWindow {
         removeAgentButton.setMaxWidth(Double.MAX_VALUE);
         removeAgentButton.setPrefWidth(200);
         removeAgentButton.setPrefHeight(50);
+        Button runSimulation = new Button("Run simulation");
+        runSimulation.setMaxWidth(Double.MAX_VALUE);
+        runSimulation.setPrefWidth(200);
+        runSimulation.setPrefHeight(50);
+        Button runOptimization = new Button("Run optimization");
+        runOptimization.setMaxWidth(Double.MAX_VALUE);
+        runOptimization.setPrefWidth(200);
+        runOptimization.setPrefHeight(50);
 
 
         rightStochasticView.getChildren().addAll(hungerLabel,
@@ -126,7 +134,9 @@ public class StochasticSimulationWindow {
                 bladderSlider,
                 placeAgentButton,
                 modifyAgentButton,
-                removeAgentButton);
+                removeAgentButton,
+                runSimulation,
+                runOptimization);
 
 
         //zero out the matrix
@@ -282,26 +292,26 @@ public class StochasticSimulationWindow {
             aStarNodes.add(iArray);
         }
 
-        AStar aStar = new AStar();
-        System.out.println(aStarNodes.size());
-        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(30).get(30), aStarNodes);
-        for(int i = 0; i<path.size()-1;i++) {
-            Line line = new Line();
-            line.setStyle("-fx-stroke: red;");
-            line.setStartX(path.get(i).x);
-            line.setStartY(path.get(i).y);
-            line.setEndX(path.get(i+1).x);
-            line.setEndY(path.get(i+1).y);
-            aStarNodes.get(path.get(i).y).get(path.get(i).x).type = 5;
-            drawingStochasticPane.getChildren().add(line);
-        }
-
-        for(int i = 0; i < 500; i++) {
-            for (int j = 0; j < 500; j++) {
-                System.out.print(aStarNodes.get(i).get(j).type);
-            }
-            System.out.println();
-        }
+//        AStar aStar = new AStar();
+//        System.out.println(aStarNodes.size());
+//        ArrayList<AStarNode> path = (ArrayList<AStarNode>) aStar.aStar(aStarNodes.get(3).get(3), aStarNodes.get(30).get(30), aStarNodes);
+//        for(int i = 0; i<path.size()-1;i++) {
+//            Line line = new Line();
+//            line.setStyle("-fx-stroke: red;");
+//            line.setStartX(path.get(i).x);
+//            line.setStartY(path.get(i).y);
+//            line.setEndX(path.get(i+1).x);
+//            line.setEndY(path.get(i+1).y);
+//            aStarNodes.get(path.get(i).y).get(path.get(i).x).type = 5;
+//            drawingStochasticPane.getChildren().add(line);
+//        }
+//
+//        for(int i = 0; i < 500; i++) {
+//            for (int j = 0; j < 500; j++) {
+//                System.out.print(aStarNodes.get(i).get(j).type);
+//            }
+//            System.out.println();
+//        }
         genericStochasticView.setCenter(drawingStochasticScrollPane);
         genericStochasticView.setRight(rightStochasticView);
 
