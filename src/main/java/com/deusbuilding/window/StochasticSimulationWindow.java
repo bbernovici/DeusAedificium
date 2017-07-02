@@ -24,7 +24,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Deque;
 
 public class StochasticSimulationWindow {
@@ -44,7 +47,7 @@ public class StochasticSimulationWindow {
     public int[][] schemaMatrix = new int[2000][2000];
     public int[][] scannedNodes = new int[2000][2000];
     ArrayList<ArrayList<Node>> nodes = new ArrayList<>();
-
+    final static TextArea console = new TextArea();
 
     public StochasticSimulationWindow() {
         stage = new Stage();
@@ -125,12 +128,19 @@ public class StochasticSimulationWindow {
         runSimulationButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                for(StochasticAgent stochasticAgent : Vault.stochasticAgents) {
-                    stochasticAgent.startAgent(nodes, stochasticAgent);
+                if(runSimulationButton.getText().equals("Run Simulation")) {
+                    for (StochasticAgent stochasticAgent : Vault.stochasticAgents) {
+                        stochasticAgent.startAgent(nodes, stochasticAgent);
+                        runSimulationButton.setText("Stop Simulation");
+                    }
+                } else if (runSimulationButton.getText().equals("Stop Simulation")) {
+                    for (StochasticAgent stochasticAgent : Vault.stochasticAgents) {
+                        stochasticAgent.stopTimer();
+                        runSimulationButton.setText("Run Simulation");
+                    }
                 }
             }
         });
-
 
 
         rightStochasticView.getChildren().addAll(hungerLabel,
@@ -145,6 +155,12 @@ public class StochasticSimulationWindow {
                 modifyAgentButton,
                 removeAgentButton,
                 runSimulationButton);
+
+        console.clear();
+        console.setPrefWidth(Double.MAX_VALUE);
+        console.setPrefHeight(50);
+        genericStochasticView.setBottom(console);
+
 
 
         //zero out the matrix
@@ -398,6 +414,12 @@ public class StochasticSimulationWindow {
                 }
             }
         });
+    }
+
+    public static void writeInConsole(String source, String message) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        console.setText(console.getText() + "[" + dateFormat.format(date) + "][" + source + "] " + message + System.lineSeparator());
     }
 
 //    public static void updateAgent(StochasticAgent agent, Integer x, Integer y) {
