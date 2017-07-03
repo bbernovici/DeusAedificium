@@ -122,6 +122,17 @@ public class StochasticAgent extends Circle {
                             hygiene -= hygieneDecay;
                             bladder -= bladderDecay;
 //                            StochasticSimulationWindow.updateAgent(agent, curNode.getPosX(), curNode.getPosY());
+                            for(CircularSensor s : Vault.circularSensors) {
+                                if(s.doesAgentIntersect(agent)) {
+                                    System.out.println("");
+                                }
+                            }
+
+                            for(DirectionalSensor d : Vault.directionalSensors) {
+                                if(d.doesAgentIntersect(agent)) {
+                                    System.out.println("");
+                                }
+                            }
                         } else {
                             status = "idle";
                             if(lastNeedSatisfied == "hunger") {
