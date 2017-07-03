@@ -31,6 +31,8 @@ public class StochasticAgent extends Circle {
     private Integer goalX;
     private Integer goalY;
     private Deque<Node> deque;
+    Timer timer;
+
 
     public StochasticAgent() {
         this.hunger = 100;
@@ -108,7 +110,7 @@ public class StochasticAgent extends Circle {
 
     public void startAgent(ArrayList<ArrayList<Node>> nodes, StochasticAgent agent) {
         executor.submit(() -> {
-            Timer timer = new Timer();
+            timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -185,6 +187,10 @@ public class StochasticAgent extends Circle {
         });
     }
 
+    public void stopTimer() {
+        timer.cancel();
+    }
+
     public void getObjectCentroidAndPath(ArrayList<Vertex> vertices, ArrayList<ArrayList<Node>> nodes) {
         double ox = 0, oy = 0;
         int onum = 0;
@@ -211,21 +217,25 @@ public class StochasticAgent extends Circle {
 
         if (index == 0) {
             lastNeedSatisfied = "hunger";
+            Platform.runLater(() -> StochasticSimulationWindow.writeInConsole("Agent thread: " + Thread.currentThread().getName(), "I'm feeling hungry!"));
             return "hunger";
         }
 
         if (index == 1) {
             lastNeedSatisfied = "energy";
+            Platform.runLater(() -> StochasticSimulationWindow.writeInConsole("Agent thread: " + Thread.currentThread().getName(), "I'm so tired!"));
             return "energy";
         }
 
         if (index == 2) {
             lastNeedSatisfied = "hygiene";
+            Platform.runLater(() -> StochasticSimulationWindow.writeInConsole("Agent thread: " + Thread.currentThread().getName(), "I'm so dirty!"));
             return "hygiene";
         }
 
         if (index == 3) {
             lastNeedSatisfied = "bladder";
+            Platform.runLater(() -> StochasticSimulationWindow.writeInConsole("Agent thread: " + Thread.currentThread().getName(), "It's an emergency!! Don't stay in my way!"));
             return "bladder";
         }
 
