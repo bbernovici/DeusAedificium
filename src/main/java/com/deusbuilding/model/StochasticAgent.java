@@ -6,6 +6,7 @@ import com.deusbuilding.util.Vault;
 import com.deusbuilding.window.StochasticSimulationWindow;
 import com.sun.org.apache.xpath.internal.SourceTree;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
@@ -124,19 +125,17 @@ public class StochasticAgent extends Circle {
                             hygiene -= hygieneDecay;
                             bladder -= bladderDecay;
 //                            StochasticSimulationWindow.updateAgent(agent, curNode.getPosX(), curNode.getPosY());
+                            Platform.runLater(() -> agent.setFill(Color.BLACK));
                             for(CircularSensor s : Vault.circularSensors) {
-                                if(s.doesAgentIntersect(agent)) {
-                                    System.out.println("");
-                                }
+                                s.checkAgentInteresct(agent);
                             }
 
                             for(DirectionalSensor d : Vault.directionalSensors) {
-                                if(d.doesAgentIntersect(agent)) {
-                                    System.out.println("");
-                                }
+                                d.checkAgentIntersect(agent);
                             }
                         } else {
                             status = "idle";
+                            Platform.runLater(() -> agent.setFill(Color.GREEN));
                             if(lastNeedSatisfied == "hunger") {
                                 hunger = 100;
                             } else if(lastNeedSatisfied == "energy") {

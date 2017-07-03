@@ -24,7 +24,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Deque;
 
 public class StochasticSimulationWindow {
@@ -44,6 +47,8 @@ public class StochasticSimulationWindow {
     public int[][] schemaMatrix = new int[2000][2000];
     public int[][] scannedNodes = new int[2000][2000];
     ArrayList<ArrayList<Node>> nodes = new ArrayList<>();
+    ArrayList<Line> heatLines = new ArrayList<>();
+    final static TextArea console = new TextArea();
 
 
     public StochasticSimulationWindow() {
@@ -121,12 +126,59 @@ public class StochasticSimulationWindow {
         Button runSimulationButton = new Button("Run Simulation");
         runSimulationButton.setMaxWidth(Double.MAX_VALUE);
         runSimulationButton.setPrefWidth(200);
-        runSimulationButton.setPrefHeight(50);
+        runSimulationButton.setPrefHeight(100);
         runSimulationButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                for(StochasticAgent stochasticAgent : Vault.stochasticAgents) {
-                    stochasticAgent.startAgent(nodes, stochasticAgent);
+                if(runSimulationButton.getText().equals("Run Simulation")) {
+                    for (StochasticAgent stochasticAgent : Vault.stochasticAgents) {
+                        stochasticAgent.startAgent(nodes, stochasticAgent);
+                        runSimulationButton.setText("Stop Simulation");
+                    }
+                } else if (runSimulationButton.getText().equals("Stop Simulation")) {
+                    for (StochasticAgent stochasticAgent : Vault.stochasticAgents) {
+                        stochasticAgent.stopTimer();
+                        runSimulationButton.setText("Run Simulation");
+                    }
+                }
+            }
+        });
+
+        Button runOptimization = new Button("Optimization (Heat map)");
+        runOptimization.setMaxWidth(Double.MAX_VALUE);
+        runOptimization.setPrefWidth(200);
+        runOptimization.setPrefHeight(50);
+        runOptimization.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (runOptimization.getText().equals("Optimization (Heat map)")) {
+                    for (int i = 0; i < Vault.nonSmartObjects.size(); i++) {
+                        for (int j = 0; j < Vault.nonSmartObjects.size(); j++) {
+                            Tuple startTuple = getObjectCentroidAndPath(Vault.nonSmartObjects.get(i).getVertices());
+                            Tuple goalTuple = getObjectCentroidAndPath(Vault.nonSmartObjects.get(j).getVertices());
+                            Deque deque = AStarImpl.getRoute(nodes.get((int) goalTuple.x / 10).get((int) goalTuple.y / 10), nodes.get((int) startTuple.x / 10).get((int) startTuple.y / 10));
+                            while (deque.size() > 1) {
+                                Line line = new Line();
+                                Node n = (Node) deque.pop();
+                                line.setStartX(n.getPosX());
+                                line.setStartY(n.getPosY());
+                                Node n2 = (Node) deque.pop();
+                                line.setEndX(n2.getPosX());
+                                line.setEndY(n2.getPosY());
+                                line.setStrokeWidth(10);
+                                line.setStroke(Color.FUCHSIA);
+                                heatLines.add(line);
+                                drawingStochasticPane.getChildren().add(line);
+                            }
+                        }
+                    }
+                    runOptimization.setText("HIDE PATHS");
+                } else {
+                    for(Line l : heatLines) {
+                        drawingStochasticPane.getChildren().remove(l);
+                        heatLines.remove(l);
+                    }
+                    runOptimization.setText("Optimization (Heat map)");
                 }
             }
         });
@@ -144,8 +196,14 @@ public class StochasticSimulationWindow {
                 placeAgentButton,
                 modifyAgentButton,
                 removeAgentButton,
-                runSimulationButton);
+                runSimulationButton,
+                runOptimization);
 
+
+        console.clear();
+        console.setPrefWidth(Double.MAX_VALUE);
+        console.setPrefHeight(50);
+        genericStochasticView.setBottom(console);
 
         //zero out the matrix
         for (int i = 0; i < schemaMatrix.length; i++) {
@@ -398,6 +456,34 @@ public class StochasticSimulationWindow {
                 }
             }
         });
+    }
+
+    public static void writeInConsole(String source, String message) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        console.setText(console.getText() + "[" + dateFormat.format(date) + "][" + source + "] " + message + System.lineSeparator());
+    }
+
+    public class Tuple<X, Y> {
+        public final X x;
+        public final Y y;
+        public Tuple(X x, Y y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    public Tuple getObjectCentroidAndPath(ArrayList<Vertex> vertices) {
+        double ox = 0, oy = 0;
+        Deque deque;
+        int onum = 0;
+        for (Vertex v : vertices) {
+            ox = ox + v.getStartX() + v.getEndX();
+            oy = oy + v.getStartY() + v.getEndY();
+            onum += 2;
+        }
+        int goalX = (int) ox/onum;
+        int goalY = (int) oy/onum;
+        return new Tuple(goalX, goalY);
     }
 
 //    public static void updateAgent(StochasticAgent agent, Integer x, Integer y) {
