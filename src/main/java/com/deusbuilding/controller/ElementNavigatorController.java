@@ -4,7 +4,6 @@ import com.deusbuilding.util.Vault;
 import com.deusbuilding.view.ElementNavigatorView;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
-import javafx.scene.layout.Pane;
 
 public class ElementNavigatorController {
 

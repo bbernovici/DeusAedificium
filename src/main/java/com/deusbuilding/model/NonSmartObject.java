@@ -1,8 +1,5 @@
 package com.deusbuilding.model;
 
-import javafx.scene.shape.Line;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NonSmartObject {
